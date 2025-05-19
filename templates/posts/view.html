@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Bejegyzés{% endblock %}
+{% block head %}
+{% endblock %}
+{% block main %}
+
+<a href="{{ url_for('posts.list_all') }}" class="btn btn-dark me-4 my-2" onclick="return confirmChanges()"><i class="fa fa-arrow-left"></i> Vissza a bejegyzésekhez</a>
+
+{% include "posts/post.html" %}
+
+{% endblock %}

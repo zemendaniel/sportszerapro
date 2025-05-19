@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}A készítőkről{% endblock %}
+
+{% block heading %}
+    {% with heading_content="A készítőkről" %}
+        {% include "heading.html" %}
+    {% endwith %}
+{% endblock %}
+
+{% block main %}
+    <div class="post my-5">
+        <h4>Szabó Bernát</h4>
+        <p>
+            Bernát, majd írj ide egy pár sort magadról...
+        </p>
+    </div>
+    <div class="post mb-5">
+        <h4>Zemen Dániel</h4>
+        <p>
+            Zemen Dániel vagyok, a Bolyai Technikum tanulója. A IT tudásom gyarapításán kívül az időm nagyrészét kajakozással
+            töltöm. Háromszoros ifjúsági Európa-bajnoknak és ifjusági világbajnoki ezüstérmesnek mondhatom magam.
+            Szoktak csodálkozni az emberek, mert a kajak és a programozás nem egy mindennapi párosítás, de én nagyon
+            szeretem mind a kettőt.
+        </p>
+        <img src="{{ url_for('static', filename='img/about/dani1.jpg') }}" alt="Dani" class="styled-image img-fluid">
+        </div>
+    <div class="post mb-5">
+        <h4>Czirják Ádám</h4>
+        <p>
+            Ádám, majd írj ide egy pár sort magadról...
+        </p>
+    </div>
+{% endblock %}

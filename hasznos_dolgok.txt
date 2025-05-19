@@ -1,0 +1,33 @@
+Relationships: https://github.com/search?q=repo%3Azemendaniel%2Fmaltai_projekt%20relationship&type=code
+Alchemical: https://alchemical.readthedocs.io/en/stable/
+
+AKINEK NEM MŰKÖDIK A DEBUGGING EZT ÍRJA BE:
+mklink /J C:\PyCharm "C:\Program Files\JetBrains\PyCharm2023.3"
+Utána pedig a PyCharm parancsikonban a target: C:\PyCharm\bin\pycharm64.exe - a start in pedig C:\PyCharm\bin
+
+Richtext, custom html escape dolgok: https://chatgpt.com/share/67238221-5e80-8000-9988-9e8f6b183371
+
+Mergelni mindannyiunk munkáját:
+git checkout master
+git pull origin master
+git merge Dani
+git merge Ádám
+git merge Bernát
+(resolve merge conflict + git commit ha merge conflict)
+git push origin master
+
+Rátenni ezt az állapotot minden branchre:
+git checkout Dani
+git reset --hard master
+git push --force origin Dani
+
+git checkout Ádám
+git reset --hard master
+git push --force origin Ádám
+
+git checkout Bernát
+git reset --hard master
+git push --force origin Bernát
+
+Hány sor a projekt?
+Linux terminálba:   git ls-files | grep -v -E '\.(jpg|jpeg|png|gif|svg|bmp|webp)$' | xargs wc -l

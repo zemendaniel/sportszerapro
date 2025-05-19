@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}A metódus nem engedélyezett!{% endblock %}
+
+{% block main %}
+    <div class="text-center">
+    <h1 class="my-2">A metódus nem engedélyezett!</h1>
+    <a href="{{ url_for("pages.home") }}" class="btn btn-dark"><i class="fa fa-arrow-left"></i> Vissza a főoldalra</a>
+    </div>
+{% endblock %}

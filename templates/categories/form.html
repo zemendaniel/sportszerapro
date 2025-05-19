@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if create %}
+    Létrehozás
+{% else %}
+    Szerkesztés
+{% endif %}
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block main %}
+    <form method="post" onchange="changed = true;" id="form">
+    {{ form.csrf_token() }}
+    <div class="form-group mb-1">
+        {{ form.name.label }}
+        {{ form.name(class="form-control no-resize", id='content')}}
+    </div>
+</form>
+
+<div class="d-flex align-items-center">
+        <button type="submit" onclick="document.getElementById('form').submit()" class="btn btn-primary-dark">
+            <i class="fa-solid fa-floppy-disk"></i> Mentés
+        </button>
+
+        {% if not create %}
+            <form action="{{ url_for('categories.delete', category_id=category.id) }}" method="post"
+                  onsubmit='return confirm("Biztosan törli?")' class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-dark mx-2">
+                    <i class="fa-solid fa-trash-can"></i> Törlés
+                </button>
+            </form>
+        {% endif %}
+</div>
+
+<script>
+    let changed = false;
+    function confirmChanges(){
+        if (changed === true){
+            return confirm("Biztosan kilép? Nem mentett módosítások vannak.");
+        }
+        return true;
+    }
+</script>
+
+{% endblock %}

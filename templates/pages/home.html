@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ org_name() }}{% endblock %}
+
+{% block heading %}
+    {% with heading_content="Bemutatkozás" %}
+        {% include "heading.html" %}
+    {% endwith %}
+{% endblock %}
+
+{% block main %}
+    <div>{{ welcome_text|safe_escape }}</div>
+{% endblock %}

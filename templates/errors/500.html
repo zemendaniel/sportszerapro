@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Nem várt hiba történt az alkalmazásban!{% endblock %}
+
+
+{% block main %}
+    <div class="text-center">
+    <h1 class="my-2">Nem várt hiba történt az alkalmazásban!</h1>
+    <a href="{{ url_for("pages.home") }}" class="btn btn-dark"><i class="fa fa-arrow-left"></i> Vissza a főoldalra</a>
+    </div>
+{% endblock %}

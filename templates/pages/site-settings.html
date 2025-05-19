@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Weboldal beállításai{% endblock %}
+
+{% block heading %}
+    {% with heading_content="Weboldal beállításai" %}
+        {% include "heading.html" %}
+    {% endwith %}
+{% endblock %}
+
+{% block main %}
+    <h5 class="gray-text"><u>Szervezet neve</u></h5>
+    <form method="post">
+        {{ org_form.csrf_token(id=False) }}
+
+        <div class="form-group">
+            {{ org_form.name.label }}
+            {{ org_form.name(class="form-control two-line-input") }}
+        </div>
+
+        <div class="form-group mb-4">
+            <button type="submit" class="btn btn-dark"><i class="fa-solid fa-floppy-disk"></i> Mentés</button>
+        </div>
+    </form>
+    <hr>
+    <div class="d-flex align-items-center">
+    <h5 class="gray-text"><u>Favicon beállítása</u></h5>
+    {% if favicon_exits %}
+        <img src="{{ url_for('pages.favicon') }}" alt="Jelenlegi ikon" class="ms-4 img-fluid" style="max-width: 100px;"/>
+    {% endif %}
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {{ icon_form.csrf_token(id=False) }}
+
+        <div class="form-group">
+            {{ icon_form.icon.label(class="mb-1") }}
+            {{ icon_form.icon(class="form-control") }}
+        </div>
+
+        <div class="form-group mb-3">
+            <button type="submit" class="btn btn-dark"><i class="fa-solid fa-floppy-disk"></i> Mentés</button>
+        </div>
+    </form>
+
+    {% if favicon_exits %}
+        <form class="mb-4" method="post" action="{{ url_for('pages.delete_favicon') }}" onsubmit="return confirm('Biztosan törli a favicon-t?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Favicon törlése</button>
+        </form>
+    {% endif %}
+    <hr>
+    <h5 class="gray-text"><u>Üdvözlő szöveg beállítása</u></h5>
+    <form method="post" class="mb-4">
+        {{ welcome_form.csrf_token(id=False) }}
+        {{ welcome_form.text.label }}
+        <div class="form-group">
+            {{ welcome_form.text() }}
+        </div>
+        <button type="submit" class="btn btn-dark"><i class="fa-solid fa-floppy-disk"></i> Mentés</button>
+    </form>
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='text') }}
+
+{% endblock %}
+
+{% block after_scripts %}
+{% endblock %}

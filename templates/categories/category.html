@@ -1,0 +1,19 @@
+<div class="post">
+    <div class="d-flex" style="font-size: 0.95rem">
+        {% if is_admin() %}
+{#            {% if not request.endpoint == 'categories.view' %}#}
+                <a href="{{ url_for('categories.view', category_id=category.id) }}" class="btn btn-secondary me-1"><i class="fa-regular fa-eye"></i> Megnéz</a>
+{#            {% endif %}#}
+
+{#            <a href="{{ url_for('categories.edit', category_id=category.id) }}" class="btn btn-dark me-1"><i class="fas fa-edit"></i> Szerkesztés</a>#}
+            <form action="{{ url_for('categories.delete', category_id=category.id) }}" method="post"
+                  onsubmit='return confirm("Biztosan törli?")'>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-primary-dark"><i class="fas fa-trash"></i> Törlés</button>
+            </form>
+        {% endif %}
+    </div>
+
+    <hr class="mb-3">
+    <div class="text-break lh-base" style="font-size: 1.1em; letter-spacing: 1px"> {{ category.name }} </div>
+</div>
