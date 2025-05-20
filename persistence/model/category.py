@@ -1,9 +1,10 @@
 from alchemical import Model
 from flask import g
-from sqlalchemy import Integer, Text, ForeignKey, String, func
+from sqlalchemy import Integer, Text, ForeignKey, String, func, Index
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import re
+import unicodedata
 
 
 class Category(Model):
@@ -15,6 +16,12 @@ class Category(Model):
 
     parent_id: Mapped[int] = mapped_column(ForeignKey('category.id'), nullable=True)
     parent: Mapped["Category"] = relationship(remote_side=[id])
+
+    __table_args__ = (
+        Index('ix_category_path', 'path'),
+        Index('ix_category_parent_id', 'parent_id'),
+        # UniqueConstraint('path_slug', name='uq_category_path_slug'),
+    )
 
     @hybrid_property
     def depth(self):
@@ -35,6 +42,8 @@ class Category(Model):
         g.session.commit()
         self.path = build_path(self)
         self.path_slug = build_path_slug(self)
+        g.session.add(self)
+        g.session.commit()
 
         update_slug_paths_for_descendants(self)
         g.session.commit()
@@ -60,30 +69,45 @@ class Category(Model):
 
     @property
     def all_ancestors(self):
-        return CategoryRepository.find_all_ancestors(self.id)
+        return CategoryRepository.find_all_ancestors(self)
+
+    @property
+    def whole_tree(self):
+        return self.all_ancestors + [self]
 
     @property
     def is_leaf(self):
-        return not self.direct_descendants()
+        return not self.direct_descendants
+
+    def __repr__(self):
+        return f"Category(id={self.id}, name={self.name}, slug={self.slug}, path={self.path}, path_slug={self.path_slug})"
 
 
 def slugify(text):
-    return re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
+    # Normalize: "á" → "a", etc.
+    text = unicodedata.normalize('NFKD', text)
+    text = text.encode('ascii', 'ignore').decode('ascii')
+    text = re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
+    return text
 
 
 def build_path_slug(category):
     parts = []
     current = category
     while current:
-        parts.insert(0, current.slug)
+        parts.insert(0, slugify(current.name))
         current = current.parent
 
-    path_slug = '/'.join(parts)
-
-    base = path_slug
+    base_path_slug = '/'.join(parts)
+    path_slug = base_path_slug
     i = 1
-    while CategoryRepository.find_by_path_slug(path_slug):
-        path_slug = f"{base}-{i}"
+
+    # Keep trying until we find a unique slug or it's the same category
+    while True:
+        existing = CategoryRepository.find_by_path_slug(path_slug)
+        if not existing or existing.id == category.id:
+            break
+        path_slug = f"{base_path_slug}-{i}"
         i += 1
 
     return path_slug

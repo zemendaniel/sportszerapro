@@ -62,13 +62,16 @@ class CategoryRepository:
         return g.session.scalars(statement).all()
 
     @staticmethod
-    def find_all_ancestors(category_id: int):
+    def find_all_ancestors(category):
+        ids = [int(i) for i in category.path.split('/')][:-1]
+        if not ids:
+            return []
+
         statement = (
             Category
             .select()
-            .where(Category.path.like(f"%/{category_id}/%"))
+            .where(Category.id.in_(ids))
         )
-
         return g.session.scalars(statement).all()
 
 
