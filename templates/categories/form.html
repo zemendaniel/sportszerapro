@@ -12,11 +12,13 @@
 {% endblock %}
 
 {% block main %}
-    <form method="post" onchange="changed = true;" id="form">
+<button class="btn btn-dark me-4 my-2" onclick="confirmChanges()"><i class="fa fa-arrow-left"></i> Vissza</button>
+
+<form method="post" onchange="changed = true;" id="form">
     {{ form.csrf_token() }}
-    <div class="form-group mb-1">
+    <div class="form-group">
         {{ form.name.label }}
-        {{ form.name(class="form-control no-resize", id='content')}}
+        {{ form.name(class="form-control", id='content')}}
     </div>
 </form>
 
@@ -27,7 +29,7 @@
 
         {% if not create %}
             <form action="{{ url_for('categories.delete', category_id=category.id) }}" method="post"
-                  onsubmit='return confirm("Biztosan törli?")' class="d-inline">
+                  onsubmit='return confirm("Biztosan törli? ({{ category.name }})")' class="d-inline">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-dark mx-2">
                     <i class="fa-solid fa-trash-can"></i> Törlés
@@ -40,9 +42,13 @@
     let changed = false;
     function confirmChanges(){
         if (changed === true){
-            return confirm("Biztosan kilép? Nem mentett módosítások vannak.");
+            if (confirm("Biztosan kilép? Nem mentett módosítások vannak.")){
+                window.history.back()
+            }
         }
-        return true;
+        else {
+            window.history.back()
+        }
     }
 </script>
 

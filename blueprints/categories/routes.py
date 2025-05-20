@@ -11,21 +11,32 @@ from security.decorators import is_admin, is_fully_authenticated
 
 
 @bp.route('/')
-@is_fully_authenticated
-@is_admin
-def list_all():
-    categories = CategoryRepository.find_all_roots()
-
-    return render_template('categories/list.html', categories=categories)
-
-
 @bp.route('/<int:category_id>')
 @is_fully_authenticated
 @is_admin
-def view(category_id):
-    category = CategoryRepository.find_by_id(category_id) or abort(404)
+def list_all(category_id=None):
+    if category_id:
+        category = CategoryRepository.find_by_id(category_id) or abort(404)
+        categories = category.direct_descendants
+#        return render_template('categories/list.html', category=category, categories=category.direct_descendants)
+    else:
+        category = None
+        categories = CategoryRepository.find_all_roots()
 
-    return render_template('categories/list.html', category=category, categories=category.direct_descendants)
+    query_string = (request.args.get('query_string') or '').strip().lower()
+    if query_string:
+        categories = [cat for cat in categories if query_string in cat.name.lower()]
+
+    return render_template('categories/list.html', categories=categories, category=category)
+
+
+# @bp.route('/<int:category_id>')
+# @is_fully_authenticated
+# @is_admin
+# def view(category_id):
+#     category = CategoryRepository.find_by_id(category_id) or abort(404)
+#
+#     return render_template('categories/list.html', category=category, categories=category.direct_descendants)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -41,9 +52,7 @@ def create():
         category.save()
         flash('Kategória hozzáadva.', 'success')
 
-        if category.parent_id:
-            return redirect(url_for('categories.view', category_id=category.parent_id))
-        return redirect(url_for('categories.list_all'))
+        return redirect(url_for('categories.list_all', category_id=category.parent_id))
 
     return render_template('categories/form.html', form=form, create=True)
 
@@ -59,9 +68,7 @@ def edit(category_id):
         category.form_update(form)
         category.save()
         flash("Kategória módosítva.", 'success')
-        if category.parent_id:
-            return redirect(url_for('categories.view', category_id=category.parent_id))
-        return redirect(url_for('categories.list_all'))
+        return redirect(url_for('categories.list_all', category_id=category.parent_id))
 
     return render_template('categories/form.html', form=form, category=category)
 
@@ -74,9 +81,7 @@ def delete(category_id):
     category.delete()
     flash('Kategória törölve.', 'success')
 
-    if category.parent_id:
-        return redirect(url_for('categories.view', category_id=category.parent_id))
-    return redirect(url_for('categories.list_all'))
+    return redirect(url_for('categories.list_all', category_id=category.parent_id))
 
 
 

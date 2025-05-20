@@ -10,7 +10,7 @@
 
 {% block main %}
 <div class="d-flex align-items-center my-2">
-    <a href="{{ url_for('categories.create') }}" class="btn btn-dark me-2">
+    <a href="{{ url_for('categories.create', parent_id=category.id if category else None) }}" class="btn btn-dark me-2">
         <i class="fa-solid fa-plus-circle"></i> Kategória hozzáadása
     </a>
 </div>
@@ -25,15 +25,17 @@
 {#            <label for="ascending" class="checkbox-label">Növekvő sorrend?</label>#}
 {#            <input type="checkbox" name="ascending" id="ascending">#}
 {#        </div>#}
-        <div class="d-flex align-items-center mb-3">
+        <div class="d-flex align-items-center mb-2">
             <button type="submit" class="btn btn-primary-dark me-2"><i class="fa-solid fa-search"></i> Keresés</button>
-            <a href="{{ url_for('posts.list_all') }}" class="btn btn-dark me-2">
+            <a href="{{ request.path }}" class="btn btn-dark me-2">
                 <i class="fa-solid fa-rotate-left"></i> Visszaállítás</a>
         </div>
     </form>
 </div>
 
-{% include "categories/breadcrumb.html" %}
+{#{% if category %}#}
+    {% include "categories/breadcrumb.html" %}
+{#{% endif %}#}
 
 <div id="content">
     {% for category in categories %}
