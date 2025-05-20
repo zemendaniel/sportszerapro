@@ -5,10 +5,18 @@
 {% endblock %}
 {% block main %}
 
+{% include "categories/breadcrumb.html" %}
 
-{% include "categories/category.html" %}
-{% for category in category.direct_descendants %}
-    {% include "categories/category.html" %}
-{% endfor %}
-    <a href="{{ url_for("categories.create", parent_id=category.id) }}">uj</a>
+{#{% include "categories/category.html" %}#}
+
+{% if not category.direct_descendants %}
+    <div>Üres</div>
+{% else %}
+    {% for category in category.direct_descendants %}
+        {% include "categories/category.html" %}
+    {% endfor %}
+{% endif %}
+
+<a href="{{ url_for("categories.create", parent_id=category.id) }}">uj</a>
+
 {% endblock %}

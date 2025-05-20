@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Posztok{% endblock %}
+{% block title %}Kategóriák{% endblock %}
 
 {% block before_main %}
     <button type="button" class="btn btn-dark btn-floating btn-lg" id="scrollToTopButton" onclick="backToTop()">
@@ -10,23 +10,21 @@
 
 {% block main %}
 <div class="d-flex align-items-center my-2">
-    {% if is_admin() %}
-        <a href="{{ url_for('categories.create') }}" class="btn btn-dark me-2">
-            <i class="fa-solid fa-plus-circle"></i> Bejegyzés hozzáadása
-        </a>
-    {% endif %}
+    <a href="{{ url_for('categories.create') }}" class="btn btn-dark me-2">
+        <i class="fa-solid fa-plus-circle"></i> Kategória hozzáadása
+    </a>
 </div>
 <div id="searchPostFormDiv">
     <form id="searchPostForm" method="get">
         <input type="hidden" name="search" value="_">
-        <div class="form-group mb-3">
+        <div class="form-group">
             <label for="query_string">Keresendő szöveg</label>
             <input type="text" name="query_string" id="query_string" class="form-control">
         </div>
-        <div class="form-group">
-            <label for="ascending" class="checkbox-label">Növekvő sorrend?</label>
-            <input type="checkbox" name="ascending" id="ascending">
-        </div>
+{#        <div class="form-group">#}
+{#            <label for="ascending" class="checkbox-label">Növekvő sorrend?</label>#}
+{#            <input type="checkbox" name="ascending" id="ascending">#}
+{#        </div>#}
         <div class="d-flex align-items-center mb-3">
             <button type="submit" class="btn btn-primary-dark me-2"><i class="fa-solid fa-search"></i> Keresés</button>
             <a href="{{ url_for('posts.list_all') }}" class="btn btn-dark me-2">
@@ -34,6 +32,8 @@
         </div>
     </form>
 </div>
+
+{% include "categories/breadcrumb.html" %}
 
 <div id="content">
     {% for category in categories %}

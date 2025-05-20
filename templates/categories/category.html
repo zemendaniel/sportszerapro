@@ -1,7 +1,7 @@
 <div class="post">
     <div class="d-flex" style="font-size: 0.95rem">
         {% if is_admin() %}
-{#            {% if not request.endpoint == 'categories.view' %}#}
+{#            {% if not category.is_leaf %}#}
                 <a href="{{ url_for('categories.view', category_id=category.id) }}" class="btn btn-secondary me-1"><i class="fa-regular fa-eye"></i> Megnéz</a>
 {#            {% endif %}#}
 

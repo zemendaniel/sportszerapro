@@ -19,13 +19,13 @@ def list_all():
     return render_template('categories/list.html', categories=categories)
 
 
-@bp.route('/view/<int:category_id>')
+@bp.route('/<int:category_id>')
 @is_fully_authenticated
 @is_admin
 def view(category_id):
     category = CategoryRepository.find_by_id(category_id) or abort(404)
-    print(category.whole_tree)
-    return render_template('categories/view.html', category=category)
+
+    return render_template('categories/list.html', category=category, categories=category.direct_descendants)
 
 
 @bp.route('/create', methods=('GET', 'POST'))

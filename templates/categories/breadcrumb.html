@@ -1,0 +1,8 @@
+<div class="d-flex">
+    <a href="{{ url_for('categories.list_all') }}" class="me-3">Home</a>
+    {% if category %}
+    {% for cat in category.whole_tree %}
+        <a href="{{ url_for('categories.view', category_id=cat.id) }}" class="me-3">{{ cat.name }}</a>
+    {% endfor %}
+    {% endif %}
+</div>
