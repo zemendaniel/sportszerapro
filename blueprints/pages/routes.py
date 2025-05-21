@@ -8,6 +8,7 @@ from io import BytesIO
 
 @bp.route('/')
 def home():
+    a = ListingRepository.find_all()
     return render_template('pages/home.html', welcome_text=SiteSettingRepository.get_welcome_text())
 
 
@@ -95,3 +96,6 @@ def errors():
 @bp.route("/about")
 def about():
     return render_template("pages/about.html")
+
+
+from persistence.repository.listing import ListingRepository

@@ -6,7 +6,7 @@ class CategoryRepository:
     def find_all():
         statement = (
             Category
-            .select().order_by(Category.id.desc())
+            .select().order_by(Category.name.desc())
         )
 
         return g.session.scalars(statement).all()
@@ -36,7 +36,7 @@ class CategoryRepository:
         statement = (
             Category
             .select()
-            .where(Category.path.like(f"%{category_id}/%"))
+            .where(Category.path.like(f"%{category_id}/%")).order_by(Category.name)
         )
 
         return g.session.scalars(statement).all()
@@ -46,7 +46,7 @@ class CategoryRepository:
         statement = (
             Category
             .select()
-            .where(Category.parent_id == category_id)
+            .where(Category.parent_id == category_id).order_by(Category.name)
         )
 
         return g.session.scalars(statement).all()
@@ -56,7 +56,7 @@ class CategoryRepository:
         statement = (
             Category
             .select()
-            .where(Category.parent_id == None)
+            .where(Category.parent_id == None).order_by(Category.name)
         )
 
         return g.session.scalars(statement).all()
@@ -70,7 +70,7 @@ class CategoryRepository:
         statement = (
             Category
             .select()
-            .where(Category.id.in_(ids))
+            .where(Category.id.in_(ids)).order_by(Category.name)
         )
         return g.session.scalars(statement).all()
 

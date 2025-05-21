@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from alchemical import Model
@@ -23,6 +24,7 @@ class User(Model):
     _password: Mapped[str] = mapped_column(String(180), nullable=False)
     _role: Mapped[str] = mapped_column(String(64), nullable=False)
     listings: Mapped[List["Listing"]] = relationship(back_populates="author")
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
 
     @property

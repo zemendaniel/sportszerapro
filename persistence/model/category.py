@@ -1,3 +1,5 @@
+from typing import List
+
 from alchemical import Model
 from flask import g
 from sqlalchemy import Integer, Text, ForeignKey, String, func, Index
@@ -5,6 +7,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import re
 import unicodedata
+
 
 
 class Category(Model):
@@ -16,6 +19,8 @@ class Category(Model):
 
     parent_id: Mapped[int] = mapped_column(ForeignKey('category.id'), nullable=True)
     parent: Mapped["Category"] = relationship(remote_side=[id])
+
+    attributes: Mapped[List["CategoryAttribute"]] = relationship(back_populates="category")
 
     __table_args__ = (
         Index('ix_category_path', 'path'),
@@ -78,6 +83,26 @@ class Category(Model):
     @property
     def is_leaf(self):
         return not self.direct_descendants
+
+    @property
+    def all_listings(self):
+        descendant_ids = [self.id] + [cat.id for cat in CategoryRepository.find_all_descendants(self.id)]
+        statement = (
+            Listing
+            .select()
+            .where(Listing.category_id.in_(descendant_ids))
+        )
+        return g.session.scalars(statement).all()
+
+    @property
+    def all_attributes(self):
+        statement = (
+            Attribute
+            .select()
+            .where(Attribute.is_default)
+        )
+
+        return g.session.scalars(statement).all() + self.attributes
 
     def __repr__(self):
         return f"Category(id={self.id}, name={self.name}, slug={self.slug}, path={self.path}, path_slug={self.path_slug})"
@@ -148,3 +173,5 @@ def handle_delete(category):
 
 from persistence.repository.category import CategoryRepository
 from persistence.repository.listing import ListingRepository
+from persistence.model.listing import Listing
+from persistence.model.attribute import Attribute
