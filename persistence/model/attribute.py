@@ -17,13 +17,14 @@ class Attribute(Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     type: Mapped[str] = mapped_column(String(100), nullable=False)
-    description: Mapped[str] = mapped_column(Text(), nullable=True)
+    description: Mapped[str] = mapped_column(String(255), nullable=True)
     is_default: Mapped[bool] = mapped_column(Boolean(), default=False)
 
     def form_update(self, form):
         self.name = form.name.data.strip()
         self.type = form.type.data
         self.description = form.description.data.strip()
+        self.is_default = form.is_default.data
 
     def save(self):
         g.session.add(self)
@@ -33,6 +34,13 @@ class Attribute(Model):
         g.session.delete(self)
         g.session.commit()
 
+    @property
+    def display_type(self):
+        return types[self.type]
+
+    @property
+    def is_default_display(self):
+        return "igen" if self.is_default else "nem"
 
 class CategoryAttribute(Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)

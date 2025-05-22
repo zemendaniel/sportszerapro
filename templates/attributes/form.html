@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if create %}
+    Létrehozás
+{% else %}
+    Szerkesztés
+{% endif %}
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block main %}
+<button class="btn btn-dark me-4 my-2" onclick="confirmChanges()"><i class="fa fa-arrow-left"></i> Vissza</button>
+
+<form method="post" onchange="changed = true;" id="form">
+    {{ form.csrf_token() }}
+    <div class="form-group">
+        {{ form.name.label }}
+        {{ form.name(class="form-control", id='content')}}
+    </div>
+    <div class="form-group">
+        {{ form.type.label }}
+        {{ form.type(class="form-control", id='content')}}
+    </div>
+    <div class="form-group">
+        {{ form.description.label }}
+        {{ form.description(class="form-control", id='content')}}
+    </div>
+    <div class="form-group">
+        {{ form.is_default.label }}
+        {{ form.is_default(class="", id='content')}}
+    </div>
+</form>
+
+<div class="d-flex align-items-center">
+        <button type="submit" onclick="document.getElementById('form').submit()" class="btn btn-primary-dark">
+            <i class="fa-solid fa-floppy-disk"></i> Mentés
+        </button>
+
+        {% if not create %}
+            <form action="{{ url_for('attributes.delete', attribute_id=attribute.id) }}" method="post"
+                  onsubmit='return confirm("Biztosan törli? ({{ attribute.name }})")' class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-dark mx-2">
+                    <i class="fa-solid fa-trash-can"></i> Törlés
+                </button>
+            </form>
+        {% endif %}
+</div>
+
+<script>
+    let changed = false;
+    function confirmChanges(){
+        if (changed === true){
+            if (confirm("Biztosan kilép? Nem mentett módosítások vannak.")){
+                window.history.back()
+            }
+        }
+        else {
+            window.history.back()
+        }
+    }
+</script>
+
+{% endblock %}

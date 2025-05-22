@@ -8,6 +8,7 @@ import blueprints.security
 import blueprints.pages
 import blueprints.users
 import blueprints.categories
+import blueprints.attributes
 import security
 from flask_wtf.csrf import CSRFProtect
 from config import Config
@@ -47,6 +48,7 @@ def create_app(config_class=Config):
     app.register_blueprint(blueprints.security.bp, url_prefix='/')
     app.register_blueprint(blueprints.users.bp, url_prefix='/users')
     app.register_blueprint(blueprints.categories.bp, url_prefix='/categories')
+    app.register_blueprint(blueprints.attributes.bp, url_prefix='/attributes')
 
     handler = RotatingFileHandler('errors.log')
     handler.setLevel(logging.ERROR)

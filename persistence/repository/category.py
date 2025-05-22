@@ -6,7 +6,7 @@ class CategoryRepository:
     def find_all():
         statement = (
             Category
-            .select().order_by(Category.name.desc())
+            .select().order_by(Category.name)
         )
 
         return g.session.scalars(statement).all()

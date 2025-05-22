@@ -1,0 +1,17 @@
+<div class="post">
+    <div class="text-break lh-base"> {{ attribute.name }} </div>
+    <div class="text-break lh-base"> {{ attribute.display_type }} </div>
+    <div class="text-break lh-base"> {{ attribute.description }} </div>
+    <div class="text-break lh-base"> {{ attribute.is_default_display }} </div>
+
+    <div class="d-flex" style="font-size: 0.95rem">
+            <a href="{{ url_for('attributes.list_all', attribute_id=attribute.id) }}" class="btn btn-secondary me-1"><i class="fa-regular fa-eye"></i></a>
+
+            <a href="{{ url_for('attributes.edit', attribute_id=attribute.id) }}" class="btn btn-dark me-1"><i class="fas fa-edit"></i></a>
+            <form action="{{ url_for('attributes.delete', attribute_id=attribute.id) }}" method="post"
+                  onsubmit='return confirm("Biztosan törli? ({{ attribute.name }})")'>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-primary-dark"><i class="fas fa-trash"></i></button>
+            </form>
+    </div>
+</div>
