@@ -74,5 +74,17 @@ class CategoryRepository:
         )
         return g.session.scalars(statement).all()
 
+    @staticmethod
+    def whole_tree_for_category(category):
+        ids = [int(i) for i in category.path.split('/')]
+        if not ids:
+            return []
+        results = []
+
+        for i in ids:
+            results.append(CategoryRepository.find_by_id(i))
+
+        return results
+
 
 from persistence.model.category import Category

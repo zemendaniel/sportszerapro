@@ -13,7 +13,7 @@
 
 {% block main %}
 <a href="{{ url_for('categories.list_all') }}" class="btn btn-dark me-4 my-2" onclick="return confirmChanges()"><i class="fa fa-arrow-left"></i> Vissza</a>
-
+{% include "categories/breadcrumb.html" %}
 <form method="post" onchange="changed = true;" id="form">
     {{ form.csrf_token() }}
     <div class="form-group">

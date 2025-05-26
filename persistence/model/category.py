@@ -75,10 +75,17 @@ class Category(Model):
     @property
     def all_ancestors(self):
         return CategoryRepository.find_all_ancestors(self)
+        # results = []
+        # current = self.parent
+        # while current:
+        #     results.append(current)
+        #     current = current.parent
+        #
+        # return results
 
     @property
     def whole_tree(self):
-        return self.all_ancestors + [self]
+        return CategoryRepository.whole_tree_for_category(self)
 
     @property
     def is_leaf(self):
