@@ -63,7 +63,7 @@ class CategoryRepository:
 
     @staticmethod
     def find_all_ancestors(category):
-        ids = [int(i) for i in category.path.split('/')][:-1]
+        ids = category.ids[:-1]
         if not ids:
             return []
 
@@ -76,7 +76,7 @@ class CategoryRepository:
 
     @staticmethod
     def whole_tree_for_category(category):
-        ids = [int(i) for i in category.path.split('/')]
+        ids = category.ids
         if not ids:
             return []
         results = []
@@ -86,5 +86,23 @@ class CategoryRepository:
 
         return results
 
+    @staticmethod
+    def all_attributes(category):
+        results = AttributeRepository.find_all_default()
+
+        ids = category.ids
+        if not ids:
+            return []
+
+        statement = (
+            CategoryAttribute
+            .select()
+            .where(CategoryAttribute.category_id.in_(ids))
+        )
+        results += [attr.attribute for attr in g.session.scalars(statement).all()]
+        return sorted(results, key=lambda x: x.name)
+
 
 from persistence.model.category import Category
+from persistence.repository.attribute import AttributeRepository
+from persistence.model.attribute import CategoryAttribute

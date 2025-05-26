@@ -27,6 +27,14 @@ class Category(Model):
         # UniqueConstraint('path_slug', name='uq_category_path_slug'),
     )
 
+    @property
+    def ids(self):
+        return [int(i) for i in self.path.split('/')]
+
+    @property
+    def actual_attributes(self):
+        return [attr.attribute for attr in self.attributes]
+
     @hybrid_property
     def depth(self):
         return len(self.path.strip('/').split('/'))
@@ -51,7 +59,7 @@ class Category(Model):
 
         update_slug_paths_for_descendants(self)
         g.session.commit()
-        delete_attributes_for_all_ancestors(self)
+        # delete_attributes_for_all_ancestors(self)
 
     def delete(self):
         handle_delete(self)
@@ -103,13 +111,31 @@ class Category(Model):
 
     @property
     def all_attributes(self):
-        statement = (
-            Attribute
-            .select()
-            .where(Attribute.is_default)
-        )
+        # statement = (
+        #     Attribute
+        #     .select()
+        #     .where(Attribute.is_default)
+        # )
+        #
+        # return g.session.scalars(statement).all() + [attr.attribute for attr in self.attributes]
+        return CategoryRepository.all_attributes(self)
 
-        return g.session.scalars(statement).all() + [attr.attribute for attr in self.attributes]
+    def attribute_is_inherited_or_default(self, attribute):
+        return self.attribute_is_inherited(attribute) or self.attribute_is_default(attribute)
+
+    def attribute_is_inherited(self, attribute):
+        return attribute in self.all_attributes and attribute not in self.actual_attributes and not attribute.is_default
+
+    def attribute_is_default(self, attribute):
+        return attribute in self.all_attributes and attribute.is_default
+
+    def attribute_reason(self, attribute):
+        if self.attribute_is_inherited(attribute):
+            return "örökölt"
+        elif self.attribute_is_default(attribute):
+            return "alapértelmezett"
+        else:
+            return "saját"
 
     def __repr__(self):
         return f"Category(id={self.id}, name={self.name}, slug={self.slug}, path={self.path}, path_slug={self.path_slug})"

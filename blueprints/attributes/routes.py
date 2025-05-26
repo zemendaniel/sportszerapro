@@ -50,8 +50,7 @@ def edit(attribute_id):
         attribute.form_update(form)
         attribute.save()
         flash("Tulajdonság módosítva.", 'success')
-        return redirect(url_for('attributes.list_all', attribute_id=attribute_id))
-
+        return redirect(url_for('attributes.edit', attribute_id=attribute.id))
     return render_template('attributes/form.html', form=form, attribute=attribute)
 
 

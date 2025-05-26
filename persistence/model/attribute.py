@@ -4,6 +4,7 @@ from alchemical import Model
 from flask import g
 from sqlalchemy import Integer, Text, ForeignKey, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import delete
 
 
 types = {
@@ -32,6 +33,8 @@ class Attribute(Model):
 
     def save(self):
         g.session.add(self)
+        if self.is_default:
+            delete_from_everywhere(self)
         g.session.commit()
 
     def delete(self):
@@ -91,6 +94,14 @@ class CategoryAttribute(Model):
 
         [obj.delete() for obj in g.session.scalars(statement).all()]
         g.session.commit()
+
+def delete_from_everywhere(attribute):
+    statement = (
+        delete(CategoryAttribute).where(CategoryAttribute.attribute_id == attribute.id)
+    )
+
+    g.session.execute(statement)
+    g.session.commit()
 
 
 from persistence.repository.post import PostRepository

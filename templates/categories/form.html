@@ -38,11 +38,11 @@
         {% endif %}
 </div>
 
-{% if not create and category.is_leaf %}
+{% if not create %}
     <h5>Meglévő</h5>
     <ul>
         {% for attr in category.all_attributes %}
-            <li>{{ attr.name }} - {{ attr.display_type }} - {{ attr.description or "nincs leírás" }} - {{ attr.is_default_display }}</li>
+            <li>{{ attr.name }} - {{ attr.display_type }} - {{ attr.description or "nincs leírás" }} - {{ category.attribute_reason(attr) }}</li>
         {% endfor %}
     </ul>
 
@@ -51,9 +51,10 @@
             {% for attr in attributes %}
                 <li>
                     <form onchange="this.submit()" action="{{ url_for('categories.set_attributes', category_id=category.id) }}" method="post">
-                        <input type="checkbox" class="me-2" name="bool_value" id="attr_{{ attr.id }}" {% if attr in category.all_attributes %}checked{% endif %}>
+                        <input type="checkbox" class="me-2" name="bool_value" id="attr_{{ attr.id }}" {% if attr in category.all_attributes %}checked{% endif %}
+                        {% if category.attribute_is_inherited_or_default(attr) %}disabled{% endif %}>
                         <input type="hidden" name="attribute_id" value="{{ attr.id }}">
-                        <label for="attr_{{ attr.id }}">{{ attr.name }} - {{ attr.display_type }} - {{ attr.description or "nincs leírás" }} - {{ attr.is_default_display }}</label>
+                        <label for="attr_{{ attr.id }}">{{ attr.name }} - {{ attr.display_type }} - {{ attr.description or "nincs leírás" }}</label>
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     </form>
                 </li>

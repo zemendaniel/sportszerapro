@@ -71,7 +71,7 @@ def edit(category_id):
         category.form_update(form)
         category.save()
         flash("Kategória módosítva.", 'success')
-        return redirect(url_for('categories.list_all', category_id=category.parent_id))
+        return redirect(url_for('categories.edit', category_id=category_id))
 
     return render_template('categories/form.html', form=form, category=category, attributes=attributes)
 
@@ -92,11 +92,14 @@ def delete(category_id):
 @is_admin
 def set_attributes(category_id):
     category = CategoryRepository.find_by_id(category_id) or abort(404)
-    if not category.is_leaf:
-        abort(403)
+    # if not category.is_leaf:
+    #     abort(403)
 
     attribute = AttributeRepository.find_by_id(int(request.form['attribute_id'])) or abort(404)
     bool_value = request.form.get('bool_value') == 'on'
+
+    if category.attribute_is_inherited_or_default(attribute):
+        abort(403)
 
     if bool_value:
         CategoryAttribute.create(category, attribute)
