@@ -5,7 +5,7 @@
 {% endblock %}
 {% block main %}
 
-<a href="{{ url_for('listings.list_all') }}" class="btn btn-dark me-4 my-2" onclick="return confirmChanges()"><i class="fa fa-arrow-left"></i> Vissza a bejegyzésekhez</a>
+<a href="{{ url_for('pages.listings') }}" class="btn btn-dark me-4 my-2" onclick="return confirmChanges()"><i class="fa fa-arrow-left"></i> Vissza a bejegyzésekhez</a>
 
 {% include "listings/post.html" %}
 

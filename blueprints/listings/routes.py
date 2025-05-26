@@ -4,14 +4,15 @@ from time import sleep
 
 from flask import request, render_template, abort, flash, redirect, url_for, g, make_response
 from blueprints.listings import bp
+from blueprints.pages import bp as base_bp
 from blueprints.listings.forms import CreatePostForm, EditPostForm
 from persistence.repository.post import PostRepository
 from persistence.model.post import Post
 from security.decorators import is_admin, is_fully_authenticated
 
 
-@bp.route('/')
-def list_all():
+@base_bp.route('/')
+def listings():
     if request.args.get('search'):
         query_string = request.args.get('query_string')
 
@@ -76,14 +77,13 @@ def delete(post_id):
     PostRepository.delete(post)
     flash('Poszt törölve.', 'success')
 
-    return redirect(url_for('listings.list_all'))
+    return redirect(url_for('pages.listings'))
 
 
 @bp.route('/test/')
 def test():
     category = CategoryRepository.find_by_id(2)
     form = category.build_create_listing_form()
-    print(form.attr_2)
     return render_template('listings/test.html', form=form)
 
 

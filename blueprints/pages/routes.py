@@ -8,7 +8,7 @@ from io import BytesIO
 
 # @bp.route('/')
 # def home():
-#     return redirect(url_for('listings.list_all'))
+#     return redirect(url_for('pages.listings'))
 
 
 # @bp.route('/site-settings', methods=['GET', 'POST'])
