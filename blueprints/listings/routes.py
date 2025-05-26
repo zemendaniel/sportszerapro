@@ -3,8 +3,8 @@ from datetime import datetime
 from time import sleep
 
 from flask import request, render_template, abort, flash, redirect, url_for, g, make_response
-from blueprints.posts import bp
-from blueprints.posts.forms import CreatePostForm, EditPostForm
+from blueprints.listings import bp
+from blueprints.listings.forms import CreatePostForm, EditPostForm
 from persistence.repository.post import PostRepository
 from persistence.model.post import Post
 from security.decorators import is_admin, is_fully_authenticated
@@ -25,7 +25,7 @@ def list_all():
     else:
         posts = PostRepository.find_all()
 
-    return render_template('posts/list.html', posts=posts)
+    return render_template('listings/list.html', posts=posts)
 
 
 @bp.route('/view/<int:post_id>')
@@ -33,7 +33,7 @@ def list_all():
 def view(post_id):
     post = PostRepository.find_by_id(post_id) or abort(404)
 
-    return render_template('posts/view.html', post=post)
+    return render_template('listings/view.html', post=post)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -48,9 +48,9 @@ def create():
         post.save()
         flash('Poszt hozzáadva.', 'success')
 
-        return redirect(url_for('posts.edit', post_id=post.id))
+        return redirect(url_for('listings.edit', post_id=post.id))
 
-    return render_template('posts/form.html', form=form, create=True)
+    return render_template('listings/form.html', form=form, create=True)
 
 
 @bp.route('/edit/<int:post_id>', methods=('GET', 'POST'))
@@ -64,9 +64,9 @@ def edit(post_id):
         post.form_update(form)
         post.save()
         flash("Poszt módosítva.", 'success')
-        return redirect(url_for('posts.edit', post_id=post.id))
+        return redirect(url_for('listings.edit', post_id=post.id))
 
-    return render_template('posts/form.html', form=form, post=post)
+    return render_template('listings/form.html', form=form, post=post)
 
 
 @bp.route('/delete/<int:post_id>', methods=('POST',))
@@ -78,7 +78,7 @@ def delete(post_id):
     PostRepository.delete(post)
     flash('Poszt törölve.', 'success')
 
-    return redirect(url_for('posts.list_all'))
+    return redirect(url_for('listings.list_all'))
 
 
 

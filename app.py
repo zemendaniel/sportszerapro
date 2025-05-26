@@ -3,7 +3,7 @@ import logging
 import persistence
 from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template
-import blueprints.posts
+import blueprints.listings
 import blueprints.security
 import blueprints.pages
 import blueprints.users
@@ -43,7 +43,7 @@ def create_app(config_class=Config):
     init_error_handlers(app)
     ckeditor.init_app(app)
 
-    app.register_blueprint(blueprints.posts.bp, url_prefix='/posts')
+    app.register_blueprint(blueprints.listings.bp, url_prefix='/')
     app.register_blueprint(blueprints.pages.bp, url_prefix='/')
     app.register_blueprint(blueprints.security.bp, url_prefix='/')
     app.register_blueprint(blueprints.users.bp, url_prefix='/users')

@@ -11,7 +11,7 @@
 {% block main %}
 <div class="d-flex align-items-center my-2">
     {% if is_admin() %}
-        <a href="{{ url_for('posts.create') }}" class="btn btn-dark me-2">
+        <a href="{{ url_for('listings.create') }}" class="btn btn-dark me-2">
             <i class="fa-solid fa-plus-circle"></i> Bejegyzés hozzáadása
         </a>
     {% endif %}
@@ -29,7 +29,7 @@
         </div>
         <div class="d-flex align-items-center mb-3">
             <button type="submit" class="btn btn-primary-dark me-2"><i class="fa-solid fa-search"></i> Keresés</button>
-            <a href="{{ url_for('posts.list_all') }}" class="btn btn-dark me-2">
+            <a href="{{ url_for('listings.list_all') }}" class="btn btn-dark me-2">
                 <i class="fa-solid fa-rotate-left"></i> Visszaállítás</a>
         </div>
     </form>
@@ -37,7 +37,7 @@
 
 <div id="content">
     {% for post in posts %}
-        {% include "posts/post.html" %}
+        {% include "listings/post.html" %}
     {% endfor %}
 </div>
 

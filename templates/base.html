@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{{ url_for('pages.favicon') }}" type="image/x-icon">
+{#    <link rel="icon" href="{{ url_for('pages.favicon') }}" type="image/x-icon">#}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -55,18 +55,13 @@
                     {% endif %}
 
                     <li class="nav-item active">
-                        <a class="nav-link {% if request.endpoint == 'pages.home' %}active{% endif %}" href="{{ url_for("pages.home") }}"><i class="fa-solid fa-house"></i> Főoldal</a>
+                        <a class="nav-link {% if 'listings' in request.endpoint %}active{% endif %}" href="{{ url_for("listings.list_all") }}"><i class="fa-solid fa-house"></i> Sportszerek</a>
                     </li>
 
-                {% if g.user %}
-                    <li class="nav-item active">
-                        <a class="nav-link {% if request.endpoint == 'posts.list_all' %}active{% endif %}" href="{{ url_for("posts.list_all") }}"><i class="fa-solid fa-book"></i> Posztok</a>
-                    </li>
-                {% endif %}
 
-                <li class="nav-item active">
-                    <a class="nav-link {% if request.endpoint == 'pages.about' %}active{% endif %}" href="{{ url_for("pages.about") }}"><i class="fa-solid fa-circle-info"></i> Rólunk</a>
-                </li>
+{#                <li class="nav-item active">#}
+{#                    <a class="nav-link {% if request.endpoint == 'pages.about' %}active{% endif %}" href="{{ url_for("pages.about") }}"><i class="fa-solid fa-circle-info"></i> Rólunk</a>#}
+{#                </li>#}
 
                 {% if is_admin() %}
                 <li class="nav-item">
@@ -78,9 +73,9 @@
                 <li class="nav-item">
                     <a class="nav-link {% if 'attributes' in request.endpoint %}active{% endif %}" href="{{ url_for("attributes.list_all") }}"><i class="fa-solid fa-tags"></i> Tulajdonságok</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'pages.site_settings' %}active{% endif %}" href="{{ url_for("pages.site_settings") }}"><i class="fas fa-gear"></i> Weboldal beállításai</a>
-                </li>
+{#                <li class="nav-item">#}
+{#                    <a class="nav-link {% if request.endpoint == 'pages.site_settings' %}active{% endif %}" href="{{ url_for("pages.site_settings") }}"><i class="fas fa-gear"></i> Weboldal beállításai</a>#}
+{#                </li>#}
                 {% endif %}
 
                 </ul>
