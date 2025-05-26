@@ -28,6 +28,7 @@ class Category(Model):
     parent: Mapped["Category"] = relationship(remote_side=[id])
 
     attributes: Mapped[List["CategoryAttribute"]] = relationship(back_populates="category", cascade="all, delete-orphan")
+    listings: Mapped[List["Listing"]] = relationship(back_populates="category")
 
     __table_args__ = (
         Index('ix_category_path', 'path'),
@@ -67,6 +68,7 @@ class Category(Model):
 
         update_slug_paths_for_descendants(self)
         g.session.commit()
+
         # delete_attributes_for_all_ancestors(self)
 
     def delete(self):
@@ -248,6 +250,16 @@ def delete_attributes_for_all_ancestors(category):
     parents = CategoryRepository.find_all_ancestors(category)
     for parent in parents:
         CategoryAttribute.remove_all_attributes(parent)
+
+
+def update_slug_for_all_listings(category):
+    categories = [category] + CategoryRepository.find_all_descendants(category.id)
+
+    for cat in categories:
+        listings = ListingRepository.find_all_by_category_id(cat.id)
+
+        for listing in listings:
+            listing.save()
 
 
 from persistence.repository.category import CategoryRepository

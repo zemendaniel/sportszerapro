@@ -31,5 +31,15 @@ class ListingRepository:
 
         return g.session.scalars(statement).all()
 
+    @staticmethod
+    def find_by_slug(slug: str):
+        statement = (
+            Listing
+            .select()
+            .where(Listing.slug == slug)
+        )
+
+        return g.session.scalar(statement)
+
 
 from persistence.model.listing import Listing

@@ -6,41 +6,35 @@ from flask import request, render_template, abort, flash, redirect, url_for, g, 
 from blueprints.listings import bp
 from blueprints.pages import bp as base_bp
 from blueprints.listings.forms import CreatePostForm, EditPostForm
-from persistence.repository.post import PostRepository
-from persistence.model.post import Post
+from persistence.repository.listing import ListingRepository
+from persistence.model.listing import Listing
 from security.decorators import is_admin, is_fully_authenticated
 
 
 @base_bp.route('/')
 def listings():
-    if request.args.get('search'):
-        query_string = request.args.get('query_string')
+    listings_arr = ListingRepository.find_all()
 
-        if request.args.get("ascending"):
-            ascending = True
-        else:
-            ascending = False
-
-        posts = PostRepository.filter(query_string, ascending)
-    else:
-        posts = PostRepository.find_all()
-
-    return render_template('listings/list.html', posts=posts)
+    return render_template('listings/list.html', listings=listings_arr)
 
 
-@bp.route('/view/<int:post_id>')
-def view(post_id):
-    post = PostRepository.find_by_id(post_id) or abort(404)
+@bp.route('/<str:slug>')
+def view(slug):
+    listing = ListingRepository.find_by_slug(slug) or abort(404)
 
-    return render_template('listings/view.html', post=post)
+    return render_template('listings/view.html', listing=listing)
 
 
-@bp.route('/create', methods=('GET', 'POST'))
+@bp.route('/uj/<int:category_id>', methods=('GET', 'POST'))
 @is_fully_authenticated
-@is_admin
-def create():
-    post = Post()
-    form = CreatePostForm()
+def create(category_id):
+    category = CategoryRepository.find_by_id(category_id) or abort(404)
+    if not category.is_leaf:
+        abort(403)
+
+    listing = Listing()
+    form = category.build_create_listing_form()
+
     if form.validate_on_submit():
         post.form_update(form)
         post.author_id = g.user.id

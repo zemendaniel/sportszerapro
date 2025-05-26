@@ -10,30 +10,30 @@
 
 {% block main %}
 <div class="d-flex align-items-center my-2">
-    {% if is_admin() %}
-        <a href="{{ url_for('listings.create') }}" class="btn btn-dark me-2">
-            <i class="fa-solid fa-plus-circle"></i> Bejegyzés hozzáadása
-        </a>
-    {% endif %}
+    <a href="{{ url_for('listings.create') }}" class="btn btn-dark me-2">
+        <i class="fa-solid fa-plus-circle"></i> Bejegyzés hozzáadása
+    </a>
 </div>
-<div id="searchPostFormDiv">
-    <form id="searchPostForm" method="get">
-        <input type="hidden" name="search" value="_">
-        <div class="form-group mb-3">
-            <label for="query_string">Keresendő szöveg</label>
-            <input type="text" name="query_string" id="query_string" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="ascending" class="checkbox-label">Növekvő sorrend?</label>
-            <input type="checkbox" name="ascending" id="ascending">
-        </div>
-        <div class="d-flex align-items-center mb-3">
-            <button type="submit" class="btn btn-primary-dark me-2"><i class="fa-solid fa-search"></i> Keresés</button>
-            <a href="{{ url_for('pages.listings') }}" class="btn btn-dark me-2">
-                <i class="fa-solid fa-rotate-left"></i> Visszaállítás</a>
-        </div>
-    </form>
-</div>
+{#<div id="searchPostFormDiv">#}
+{#    <form id="searchPostForm" method="get">#}
+{#        <input type="hidden" name="search" value="_">#}
+{#        <div class="form-group mb-3">#}
+{#            <label for="query_string">Keresendő szöveg</label>#}
+{#            <input type="text" name="query_string" id="query_string" class="form-control">#}
+{#        </div>#}
+{#        <div class="form-group">#}
+{#            <label for="ascending" class="checkbox-label">Növekvő sorrend?</label>#}
+{#            <input type="checkbox" name="ascending" id="ascending">#}
+{#        </div>#}
+{#        <div class="d-flex align-items-center mb-3">#}
+{#            <button type="submit" class="btn btn-primary-dark me-2"><i class="fa-solid fa-search"></i> Keresés</button>#}
+{#            <a href="{{ url_for('pages.listings') }}" class="btn btn-dark me-2">#}
+{#                <i class="fa-solid fa-rotate-left"></i> Visszaállítás</a>#}
+{#        </div>#}
+{#    </form>#}
+{#</div>#}
+
+{% include "categories/breadcrumb.html" %}
 
 <div id="content">
     {% for post in posts %}
