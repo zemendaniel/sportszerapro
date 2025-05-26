@@ -16,31 +16,37 @@
     {% include "listings/breadcrumb.html" %}
 </div>
 <form method="post" onchange="changed = true;" id="form-meta">
-    {{ form_meta.csrf_token() }}
+    {{ form.csrf_token() }}
     <div class="form-group mb-1">
-        {{ form_meta.title.label }}
-        {{ form_meta.title(class="form-control", id='content')}}
-    </div>
-    <div class="form-group mb-1">
-        {{ form_meta.intent.label }}
-        {{ form_meta.intent(class="form-control", id='content')}}
+        {{ form.title.label }}
+        {{ form.title(class="form-control", id='content')}}
     </div>
     <div class="form-group mb-1">
-        {{ form_meta.condition.label }}
-        {{ form_meta.condition(class="form-control", id='content')}}
+        {{ form.intent.label }}
+        {{ form.intent(class="form-control", id='content')}}
     </div>
     <div class="form-group mb-1">
-        {{ form_meta.description.label }}
-        {{ form_meta.description(class="form-control no-resize", id='content')}}
+        {{ form.condition.label }}
+        {{ form.condition(class="form-control", id='content')}}
     </div>
     <div class="form-group mb-1">
-        {{ form_meta.price.label }}
-        {{ form_meta.price(class="form-control", id='content')}}
+        {{ form.description.label }}
+        {{ form.description(class="form-control no-resize", id='content')}}
     </div>
-    <div class="form-group">
-        {{ form_meta.location.label }}
-        {{ form_meta.location(class="form-control", id='content')}}
+    <div class="form-group mb-1">
+        {{ form.price.label }}
+        {{ form.price(class="form-control", id='content')}}
     </div>
+    <div class="form-group mb-1">
+        {{ form.location.label }}
+        {{ form.location(class="form-control", id='content')}}
+    </div>
+    {% for field in form if 'attr_' in field.name %}
+        <div class="form-group mb-1">
+          {{ field.label }}
+          {{ field(class="form-control") }}
+        </div>
+      {% endfor %}
     <div class="form-group">
         <button type="submit" class="btn btn-primary-dark">
             <i class="fa-solid fa-floppy-disk"></i> Mentés

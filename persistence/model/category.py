@@ -187,7 +187,7 @@ class Category(Model):
             fields[f'attr_{attr.id}'] = field
 
         # Dynamically create the form class with the fields
-        DynamicForm = type(f'CreateListingForm_Category{self.id}', (FlaskForm,), fields)
+        DynamicForm = type(f'CreateListingForm_Category{self.id}', (CreateListingFormMeta,), fields)
 
         # Return an instance of the form
         return DynamicForm()
@@ -276,3 +276,4 @@ from persistence.repository.listing import ListingRepository
 from persistence.model.listing import Listing
 from persistence.model.attribute import Attribute
 from persistence.model.attribute import CategoryAttribute
+from blueprints.listings.forms import CreateListingFormMeta

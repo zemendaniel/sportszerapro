@@ -12,9 +12,9 @@ class Listing(Model):
     description: Mapped[str] = mapped_column(Text(), nullable=False)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[DateTime] = mapped_column(DateTime(), nullable=False, default=datetime.utcnow())
-    slug: Mapped[str] = mapped_column(String(500), nullable=False, unique=True)
+    slug: Mapped[str] = mapped_column(String(500))
     category_id: Mapped[int] = mapped_column(ForeignKey('category.id'), nullable=False)
-    category: Mapped["Category"] = relationship(back_populates="listings")
+    category: Mapped["Category"] = relationship("Category", back_populates="listings")
     intent: Mapped[str] = mapped_column(String(10), nullable=False)
     price: Mapped[int] = mapped_column(Integer, nullable=False)
     location: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -35,8 +35,9 @@ class Listing(Model):
         self.condition = form.condition.data
 
     def save(self):
-        self.slug = f"{self.category.path_slug}/{slugify(self.title)}-{self.id}"
         g.session.add(self)
+        g.session.commit()
+        self.slug = f"{self.category.path_slug}/{slugify(self.title)}-{self.id}"
         g.session.commit()
 
     def delete(self):

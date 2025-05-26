@@ -56,12 +56,12 @@ def create(category_id):
         abort(403)
 
     listing = Listing()
-    form_meta = CreateListingFormMeta()
     form = category.build_create_listing_form()
 
-    if form_meta.validate_on_submit() and form.validate_on_submit():
+    if form.validate_on_submit():
         listing.form_update(form)
         listing.author_id = g.user.id
+        listing.category = category
         listing.save()
 
         for field_name, field in form._fields.items():
@@ -75,7 +75,7 @@ def create(category_id):
 
         return redirect(url_for('pages.listings'))
 
-    return render_template('listings/form.html', form=form, create=True, category=category, form_meta=form_meta)
+    return render_template('listings/form.html', form=form, create=True, category=category)
 
 
 # @bp.route('/edit/<int:post_id>', methods=('GET', 'POST'))
