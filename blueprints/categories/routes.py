@@ -110,11 +110,3 @@ def set_attributes(category_id):
 
     return redirect(url_for('categories.edit', category_id=category_id))
 
-
-
-
-
-
-
-
-

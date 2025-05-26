@@ -102,6 +102,11 @@ class CategoryRepository:
         results += [attr.attribute for attr in g.session.scalars(statement).all()]
         return sorted(results, key=lambda x: x.name)
 
+    @staticmethod
+    def find_all_leafs_of_category(category):
+        results = CategoryRepository.find_all_descendants(category.id)
+        return [cat for cat in results if cat.is_leaf]
+
 
 from persistence.model.category import Category
 from persistence.repository.attribute import AttributeRepository

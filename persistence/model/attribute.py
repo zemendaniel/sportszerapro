@@ -12,7 +12,8 @@ types = {
     'int': 'Szám',
     'float': 'Törtszám',
     'bool': 'Igaz/hamis',
-    'date': 'Dátum'
+    'date': 'Dátum',
+    'list': 'Lista'
 }
 
 
@@ -22,7 +23,7 @@ class Attribute(Model):
     type: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=True)
     is_default: Mapped[bool] = mapped_column(Boolean(), default=False)
-
+    choices: Mapped[str] = mapped_column(String(1000), nullable=True)
     category_links: Mapped[List["CategoryAttribute"]] = relationship(back_populates="attribute", cascade="all, delete-orphan")
 
     def form_update(self, form):
@@ -30,6 +31,7 @@ class Attribute(Model):
         self.type = form.type.data
         self.description = form.description.data.strip()
         self.is_default = form.is_default.data
+        self.choices = form.choices.data
 
     def save(self):
         g.session.add(self)
@@ -48,6 +50,13 @@ class Attribute(Model):
     @property
     def is_default_display(self):
         return "alapértelmezett" if self.is_default else "nem alapértelmezett"
+
+    @property
+    def choices_list(self):
+        if self.type != 'list':
+            return []
+        else:
+            return [c.strip() for c in self.choices.split(';')]
 
 
 class CategoryAttribute(Model):
@@ -94,6 +103,7 @@ class CategoryAttribute(Model):
 
         [obj.delete() for obj in g.session.scalars(statement).all()]
         g.session.commit()
+
 
 def delete_from_everywhere(attribute):
     statement = (

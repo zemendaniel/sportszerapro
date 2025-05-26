@@ -2,11 +2,19 @@ from typing import List
 
 from alchemical import Model
 from flask import g
-from sqlalchemy import Integer, Text, ForeignKey, String, func, Index
+from flask_wtf import FlaskForm
+from sqlalchemy import Integer, Text, ForeignKey, String, func, Index, BLOB
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import re
 import unicodedata
+import pickle
+
+from wtforms.fields.choices import SelectField
+from wtforms.fields.datetime import DateField
+from wtforms.fields.numeric import IntegerField, FloatField
+from wtforms.fields.simple import StringField, BooleanField
+from wtforms.validators import DataRequired
 
 
 class Category(Model):
@@ -139,6 +147,38 @@ class Category(Model):
 
     def __repr__(self):
         return f"Category(id={self.id}, name={self.name}, slug={self.slug}, path={self.path}, path_slug={self.path_slug})"
+
+    def build_create_listing_form(self):
+        class DynamicForm(FlaskForm):
+            pass
+
+        fields = {}
+
+        for attr in self.all_attributes:
+            field_kwargs = {
+                'label': attr.name,
+                'validators': [DataRequired()],
+            }
+
+            if attr.type == 'str':
+                field = StringField(**field_kwargs)
+            elif attr.type == 'int':
+                field = IntegerField(**field_kwargs)
+            elif attr.type == 'float':
+                field = FloatField(**field_kwargs)
+            elif attr.type == 'bool':
+                field = BooleanField(**field_kwargs)
+            elif attr.type == 'date':
+                field = DateField(**field_kwargs)
+            elif attr.type == 'list':
+                choices = [(c, c) for c in attr.choices_list]
+                field = SelectField(**field_kwargs, choices=choices)
+            else:
+                continue
+
+            fields[f'attr_{attr.id}'] = field
+
+        return DynamicForm()
 
 
 def slugify(text):

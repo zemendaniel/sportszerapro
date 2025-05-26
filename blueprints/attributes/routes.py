@@ -33,7 +33,6 @@ def create():
         attribute.form_update(form)
         attribute.save()
         flash('Tulajdonság hozzáadva.', 'success')
-
         return redirect(url_for('attributes.list_all'))
 
     return render_template('attributes/form.html', form=form, create=True)
