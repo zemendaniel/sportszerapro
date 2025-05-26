@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block main %}
-<button class="btn btn-dark me-4 my-2" onclick="confirmChanges()"><i class="fa fa-arrow-left"></i> Vissza</button>
+<a href="{{ url_for('categories.list_all') }}" class="btn btn-dark me-4 my-2" onclick="return confirmChanges()"><i class="fa fa-arrow-left"></i> Vissza</a>
 
 <form method="post" onchange="changed = true;" id="form">
     {{ form.csrf_token() }}
@@ -38,18 +38,31 @@
         {% endif %}
 </div>
 
+{% if not create and category.is_leaf %}
+    <h5>Meglévő</h5>
+    <ul>
+        {% for attr in category.all_attributes %}
+            <li>{{ attr.name }} - {{ attr.display_type }} - {{ attr.description or "nincs leírás" }} - {{ attr.is_default_display }}</li>
+        {% endfor %}
+    </ul>
+
+    <h5>Lehetőségek</h5>
+        <ul>
+            {% for attr in attributes %}
+                <li>
+                    <form onchange="this.submit()" action="{{ url_for('categories.set_attributes', category_id=category.id) }}" method="post">
+                        <input type="checkbox" class="me-2" name="bool_value" id="attr_{{ attr.id }}" {% if attr in category.all_attributes %}checked{% endif %}>
+                        <input type="hidden" name="attribute_id" value="{{ attr.id }}">
+                        <label for="attr_{{ attr.id }}">{{ attr.name }} - {{ attr.display_type }} - {{ attr.description or "nincs leírás" }} - {{ attr.is_default_display }}</label>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+{% endif %}
+
 <script>
     let changed = false;
-    function confirmChanges(){
-        if (changed === true){
-            if (confirm("Biztosan kilép? Nem mentett módosítások vannak.")){
-                window.history.back()
-            }
-        }
-        else {
-            window.history.back()
-        }
-    }
 </script>
 
 {% endblock %}

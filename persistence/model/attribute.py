@@ -1,3 +1,5 @@
+from typing import List
+
 from alchemical import Model
 from flask import g
 from sqlalchemy import Integer, Text, ForeignKey, String, Boolean
@@ -20,6 +22,8 @@ class Attribute(Model):
     description: Mapped[str] = mapped_column(String(255), nullable=True)
     is_default: Mapped[bool] = mapped_column(Boolean(), default=False)
 
+    category_links: Mapped[List["CategoryAttribute"]] = relationship(back_populates="attribute", cascade="all, delete-orphan")
+
     def form_update(self, form):
         self.name = form.name.data.strip()
         self.type = form.type.data
@@ -40,16 +44,53 @@ class Attribute(Model):
 
     @property
     def is_default_display(self):
-        return "igen" if self.is_default else "nem"
+        return "alapértelmezett" if self.is_default else "nem alapértelmezett"
+
 
 class CategoryAttribute(Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     category_id: Mapped[int] = mapped_column(ForeignKey("category.id"), nullable=False)
     attribute_id: Mapped[int] = mapped_column(ForeignKey("attribute.id"), nullable=False)
-    required: Mapped[bool] = mapped_column(Boolean(), default=False)
+    # required: Mapped[bool] = mapped_column(Boolean(), default=False)
 
     category: Mapped["Category"] = relationship("Category", back_populates="attributes")
-    attribute: Mapped["Attribute"] = relationship()
+    attribute: Mapped["Attribute"] = relationship(back_populates="category_links")
+
+    def save(self):
+        g.session.add(self)
+        g.session.commit()
+
+    def delete(self):
+        g.session.delete(self)
+        g.session.commit()
+
+    @staticmethod
+    def create(category, attribute):
+        obj = CategoryAttribute(category_id=category.id, attribute_id=attribute.id)
+        obj.save()
+
+    @staticmethod
+    def remove(category, attribute):
+        statement = (
+            CategoryAttribute
+            .select()
+            .where(CategoryAttribute.category_id == category.id)
+            .where(CategoryAttribute.attribute_id == attribute.id)
+        )
+
+        g.session.scalar(statement).delete()
+        g.session.commit()
+
+    @staticmethod
+    def remove_all_attributes(category):
+        statement = (
+            CategoryAttribute
+            .select()
+            .where(CategoryAttribute.category_id == category.id)
+        )
+
+        [obj.delete() for obj in g.session.scalars(statement).all()]
+        g.session.commit()
 
 
 from persistence.repository.post import PostRepository

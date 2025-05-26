@@ -6,8 +6,10 @@ from flask import request, render_template, abort, flash, redirect, url_for, g, 
 from blueprints.categories import bp
 from blueprints.categories.forms import CreateCategoryForm
 from persistence.repository.category import CategoryRepository
+from persistence.repository.attribute import AttributeRepository
 from persistence.model.category import Category
 from security.decorators import is_admin, is_fully_authenticated
+from persistence.model.attribute import CategoryAttribute
 
 
 @bp.route('/')
@@ -63,6 +65,7 @@ def create():
 def edit(category_id):
     category = CategoryRepository.find_by_id(category_id) or abort(404)
     form = CreateCategoryForm(obj=category)
+    attributes = AttributeRepository.find_all_not_default()
 
     if form.validate_on_submit():
         category.form_update(form)
@@ -70,7 +73,7 @@ def edit(category_id):
         flash("Kategória módosítva.", 'success')
         return redirect(url_for('categories.list_all', category_id=category.parent_id))
 
-    return render_template('categories/form.html', form=form, category=category)
+    return render_template('categories/form.html', form=form, category=category, attributes=attributes)
 
 
 @bp.route('/delete/<int:category_id>', methods=('POST',))
@@ -82,6 +85,27 @@ def delete(category_id):
     flash('Kategória törölve.', 'success')
 
     return redirect(url_for('categories.list_all', category_id=category.parent_id))
+
+
+@bp.route('/set_attributes/<int:category_id>', methods=('POST',))
+@is_fully_authenticated
+@is_admin
+def set_attributes(category_id):
+    category = CategoryRepository.find_by_id(category_id) or abort(404)
+    if not category.is_leaf:
+        abort(403)
+
+    attribute = AttributeRepository.find_by_id(int(request.form['attribute_id'])) or abort(404)
+    bool_value = request.form.get('bool_value') == 'on'
+
+    if bool_value:
+        CategoryAttribute.create(category, attribute)
+    else:
+        CategoryAttribute.remove(category, attribute)
+
+    flash('Kategória módosítva.', 'success')
+
+    return redirect(url_for('categories.edit', category_id=category_id))
 
 
 

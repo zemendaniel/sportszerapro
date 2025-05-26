@@ -12,6 +12,16 @@ class AttributeRepository:
         return g.session.scalars(statement).all()
 
     @staticmethod
+    def find_all_not_default():
+        statement = (
+            Attribute
+            .select()
+            .where(Attribute.is_default == False).order_by(Attribute.name)
+        )
+
+        return g.session.scalars(statement).all()
+
+    @staticmethod
     def find_by_id(attribute_id: int):
         statement = (
             Attribute

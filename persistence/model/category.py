@@ -19,7 +19,7 @@ class Category(Model):
     parent_id: Mapped[int] = mapped_column(ForeignKey('category.id'), nullable=True)
     parent: Mapped["Category"] = relationship(remote_side=[id])
 
-    attributes: Mapped[List["CategoryAttribute"]] = relationship(back_populates="category")
+    attributes: Mapped[List["CategoryAttribute"]] = relationship(back_populates="category", cascade="all, delete-orphan")
 
     __table_args__ = (
         Index('ix_category_path', 'path'),
@@ -51,6 +51,7 @@ class Category(Model):
 
         update_slug_paths_for_descendants(self)
         g.session.commit()
+        delete_attributes_for_all_ancestors(self)
 
     def delete(self):
         handle_delete(self)
@@ -101,7 +102,7 @@ class Category(Model):
             .where(Attribute.is_default)
         )
 
-        return g.session.scalars(statement).all() + self.attributes
+        return g.session.scalars(statement).all() + [attr.attribute for attr in self.attributes]
 
     def __repr__(self):
         return f"Category(id={self.id}, name={self.name}, slug={self.slug}, path={self.path}, path_slug={self.path_slug})"
@@ -170,7 +171,14 @@ def handle_delete(category):
         g.session.delete(listing)
 
 
+def delete_attributes_for_all_ancestors(category):
+    parents = CategoryRepository.find_all_ancestors(category)
+    for parent in parents:
+        CategoryAttribute.remove_all_attributes(parent)
+
+
 from persistence.repository.category import CategoryRepository
 from persistence.repository.listing import ListingRepository
 from persistence.model.listing import Listing
 from persistence.model.attribute import Attribute
+from persistence.model.attribute import CategoryAttribute

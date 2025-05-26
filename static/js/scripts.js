@@ -137,3 +137,9 @@ function createFlashMessage(msg, category){
 
     }, 10000);
 }
+function confirmChanges(){
+    if (changed === true){
+        return confirm("Biztosan kilépsz? Nem mentett módosítások vannak.");
+    }
+    return true;
+}
