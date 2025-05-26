@@ -73,6 +73,12 @@
                     <a class="nav-link {% if request.endpoint == 'users.list_all' %}active{% endif %}" href="{{ url_for("users.list_all") }}"><i class="fas fa-users"></i> Felhasználók</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {% if 'categories' in request.endpoint %}active{% endif %}" href="{{ url_for("categories.list_all") }}"><i class="fa-solid fa-layer-group"></i> Kategóriák</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'attributes' in request.endpoint %}active{% endif %}" href="{{ url_for("attributes.list_all") }}"><i class="fa-solid fa-tags"></i> Tulajdonságok</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {% if request.endpoint == 'pages.site_settings' %}active{% endif %}" href="{{ url_for("pages.site_settings") }}"><i class="fas fa-gear"></i> Weboldal beállításai</a>
                 </li>
                 {% endif %}
