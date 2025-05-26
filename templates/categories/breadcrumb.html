@@ -1,4 +1,4 @@
-<div class="d-flex mb-2 align-items-center" style="font-size: 1.1rem">
+<div class="d-flex align-items-center" style="font-size: 1.1rem">
     <a href="{{ url_for('categories.list_all') }}" class="me-1 badge badge-custom" style="color: #e0e0e0;"><i class="fa-solid fa-house"></i></a>
     {% if category %}
         {% for cat in category.whole_tree %}

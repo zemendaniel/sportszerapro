@@ -9,12 +9,7 @@
 {% endblock %}
 
 {% block main %}
-<div class="d-flex align-items-center my-2">
-    <a href="{{ url_for('categories.create', parent_id=category.id if category else None) }}" class="btn btn-dark me-2">
-        <i class="fa-solid fa-plus-circle"></i> Kategória hozzáadása
-    </a>
-</div>
-<div id="searchPostFormDiv">
+<div id="searchPostFormDiv" class="mt-2">
     <form id="searchPostForm" method="get">
         <input type="hidden" name="search" value="_">
         <div class="form-group">
@@ -33,11 +28,26 @@
     </form>
 </div>
 
+
 {#{% if category %}#}
     {% include "categories/breadcrumb.html" %}
 {#{% endif %}#}
+<div class="d-flex align-items-center">
+    <a href="{{ url_for('categories.create', parent_id=category.id if category else None) }}" class="btn btn-primary-dark me-2">
+        <i class="fa-solid fa-plus-circle"></i>
+    </a>
+    {% if category %}
+        <a href="{{ url_for('categories.edit', category_id=category.id) }}" class="btn btn-dark me-2"><i class="fas fa-edit"></i></a>
+        <form action="{{ url_for('categories.delete', category_id=category.id) }}" method="post"
+              onsubmit='return confirm("Biztosan törli? ({{ category.name }})")'>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+        </form>
+    {% endif %}
+</div>
 
-<div id="content">
+
+<div id="content" class="mt-2">
     {% for category in categories %}
         {% include "categories/category.html" %}
     {% endfor %}
