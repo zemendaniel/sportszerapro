@@ -56,7 +56,8 @@ def create():
 
         return redirect(url_for('categories.list_all', category_id=category.parent_id))
 
-    return render_template('categories/form.html', form=form, create=True)
+    return render_template('categories/form.html', form=form, create=True,
+                           category=CategoryRepository.find_by_id(int(parent_id)) if parent_id else None)
 
 
 @bp.route('/edit/<int:category_id>', methods=('GET', 'POST'))

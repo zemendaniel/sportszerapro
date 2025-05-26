@@ -9,20 +9,43 @@ from blueprints.listings.forms import CreateListingFormMeta
 from persistence.repository.listing import ListingRepository
 from persistence.model.listing import Listing
 from security.decorators import is_admin, is_fully_authenticated
+from persistence.model.attribute import AttributeValue
 
 
 @base_bp.route('/')
-def listings():
-    listings_arr = ListingRepository.find_all()
+@base_bp.route('/<path:path_slug>')
+def listings(path_slug=None):
+    if path_slug:
+        category = CategoryRepository.find_by_path_slug(path_slug) or abort(404)
+        categories = category.direct_descendants
+    else:
+        category = None
+        categories = CategoryRepository.find_all_roots()
 
-    return render_template('listings/list.html', listings=listings_arr)
+    # listings_arr = ListingRepository.find_all()
+
+    return render_template('listings/list.html', categories=categories, category=category)
 
 
-@bp.route('/<str:slug>')
+@bp.route('/<string:slug>')
 def view(slug):
     listing = ListingRepository.find_by_slug(slug) or abort(404)
 
     return render_template('listings/view.html', listing=listing)
+
+
+@is_fully_authenticated
+@bp.route('/kategoria-valaszto')
+@bp.route('/kategoria-valaszto/<int:category_id>')
+def category_selector(category_id=None):
+    if category_id:
+        category = CategoryRepository.find_by_id(category_id) or abort(404)
+        categories = category.direct_descendants
+    else:
+        category = None
+        categories = CategoryRepository.find_all_roots()
+
+    return render_template('listings/category_selector.html', category=category, categories=categories)
 
 
 @bp.route('/uj/<int:category_id>', methods=('GET', 'POST'))
@@ -41,15 +64,18 @@ def create(category_id):
         listing.author_id = g.user.id
         listing.save()
 
-        # for:
-        #     pass
-
+        for field_name, field in form._fields.items():
+            if field_name.startswith("attr_"):
+                attr_id = int(field_name.replace("attr_", ""))
+                value = field.data
+                attr_value_link = AttributeValue(attribute_id=attr_id, listing_id=listing.id, value=value)
+                attr_value_link.save()
 
         flash('Hirdetés hozzáadva.', 'success')
 
         return redirect(url_for('pages.listings'))
 
-    return render_template('listings/form.html', form=form, create=True)
+    return render_template('listings/form.html', form=form, create=True, category=category, form_meta=form_meta)
 
 
 # @bp.route('/edit/<int:post_id>', methods=('GET', 'POST'))

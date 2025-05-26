@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Posztok{% endblock %}
+{% block title %}Hirdetések{% endblock %}
 
 {% block before_main %}
     <button type="button" class="btn btn-dark btn-floating btn-lg" id="scrollToTopButton" onclick="backToTop()">
@@ -10,8 +10,8 @@
 
 {% block main %}
 <div class="d-flex align-items-center my-2">
-    <a href="{{ url_for('listings.create') }}" class="btn btn-dark me-2">
-        <i class="fa-solid fa-plus-circle"></i> Bejegyzés hozzáadása
+    <a href="{{ url_for('listings.category_selector') }}" class="btn btn-dark me-2">
+        <i class="fa-solid fa-plus-circle"></i> Hirdetés hozzáadása
     </a>
 </div>
 {#<div id="searchPostFormDiv">#}
@@ -33,7 +33,16 @@
 {#    </form>#}
 {#</div>#}
 
-{% include "categories/breadcrumb.html" %}
+{% include "listings/breadcrumb.html" %}
+<div id="content" class="mt-2">
+    {% for category in categories %}
+        <a href="{{ url_for('pages.listings', path_slug=category.path_slug) }}" class="text-decoration-none text-light">
+            <div class="post">
+                <div class="text-break lh-base">{{ category.name }}</div>
+            </div>
+        </a>
+    {% endfor %}
+</div>
 
 <div id="content">
     {% for post in posts %}

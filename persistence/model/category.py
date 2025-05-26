@@ -152,14 +152,12 @@ class Category(Model):
 
     def build_create_listing_form(self):
         fields = {}
-        attr_map = {}
 
         for attr in self.all_attributes:
             field_kwargs = {
                 'label': attr.name,
                 'validators': [DataRequired()],
             }
-            attr_map[attr.id] = attr
 
             if attr.type == 'small_str':
                 field = StringField(
@@ -190,12 +188,9 @@ class Category(Model):
 
         # Dynamically create the form class with the fields
         DynamicForm = type(f'CreateListingForm_Category{self.id}', (FlaskForm,), fields)
-        instance = DynamicForm()
-        instance._attribute_map = attr_map
 
         # Return an instance of the form
-        return instance
-
+        return DynamicForm()
 
 def slugify(text):
     # Normalize: "á" → "a", etc.

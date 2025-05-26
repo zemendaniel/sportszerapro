@@ -1,0 +1,9 @@
+<div class="d-flex align-items-center" style="font-size: 1.1rem">
+    <a href="{{ url_for('listings.category_selector') }}" class="me-1 badge badge-custom" style="color: #e0e0e0;"><i class="fa-solid fa-house"></i></a>
+    {% if category %}
+        {% for cat in category.whole_tree %}
+            <i class="fa-solid fa-chevron-right me-1"></i>
+            <a href="{{ url_for('listings.category_selector', category_id=cat.id) }}" class="me-1 badge badge-custom" style="color: #e0e0e0; text-decoration: none">{{ cat.name }}</a>
+        {% endfor %}
+    {% endif %}
+</div>

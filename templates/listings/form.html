@@ -12,21 +12,44 @@
 {% endblock %}
 
 {% block main %}
-    <a href="{{ url_for('pages.listings') }}" class="btn btn-dark me-4 my-2" onclick="return confirmChanges()"><i class="fa fa-arrow-left"></i> Vissza a bejegyzésekhez</a>
-
-    <form method="post" onchange="changed = true;" id="form">
-    {{ form.csrf_token() }}
+<div class="my-2">
+    {% include "listings/breadcrumb.html" %}
+</div>
+<form method="post" onchange="changed = true;" id="form-meta">
+    {{ form_meta.csrf_token() }}
     <div class="form-group mb-1">
-        {{ form.content.label }}
-        {{ form.content(class="form-control no-resize", id='content')}}
+        {{ form_meta.title.label }}
+        {{ form_meta.title(class="form-control", id='content')}}
     </div>
+    <div class="form-group mb-1">
+        {{ form_meta.intent.label }}
+        {{ form_meta.intent(class="form-control", id='content')}}
+    </div>
+    <div class="form-group mb-1">
+        {{ form_meta.condition.label }}
+        {{ form_meta.condition(class="form-control", id='content')}}
+    </div>
+    <div class="form-group mb-1">
+        {{ form_meta.description.label }}
+        {{ form_meta.description(class="form-control no-resize", id='content')}}
+    </div>
+    <div class="form-group mb-1">
+        {{ form_meta.price.label }}
+        {{ form_meta.price(class="form-control", id='content')}}
+    </div>
+    <div class="form-group">
+        {{ form_meta.location.label }}
+        {{ form_meta.location(class="form-control", id='content')}}
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary-dark">
+            <i class="fa-solid fa-floppy-disk"></i> Mentés
+        </button>
+    </div>
+
 </form>
 
 <div class="d-flex align-items-center">
-        <button type="submit" onclick="document.getElementById('form').submit()" class="btn btn-primary-dark">
-            <i class="fa-solid fa-floppy-disk"></i> Mentés
-        </button>
-
         {% if not create %}
             <form action="{{ url_for('listings.delete', post_id=post.id) }}" method="post"
                   onsubmit='return confirm("Biztosan törli?")' class="d-inline">
