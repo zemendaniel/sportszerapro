@@ -13,8 +13,8 @@ import pickle
 from wtforms.fields.choices import SelectField
 from wtforms.fields.datetime import DateField
 from wtforms.fields.numeric import IntegerField, FloatField
-from wtforms.fields.simple import StringField, BooleanField
-from wtforms.validators import DataRequired
+from wtforms.fields.simple import StringField, BooleanField, TextAreaField
+from wtforms.validators import DataRequired, length
 
 
 class Category(Model):
@@ -152,15 +152,26 @@ class Category(Model):
 
     def build_create_listing_form(self):
         fields = {}
+        attr_map = {}
 
         for attr in self.all_attributes:
             field_kwargs = {
                 'label': attr.name,
                 'validators': [DataRequired()],
             }
+            attr_map[attr.id] = attr
 
-            if attr.type == 'str':
-                field = StringField(**field_kwargs)
+            if attr.type == 'small_str':
+                field = StringField(
+                    label=attr.name,
+                    validators=[DataRequired(), length(max=255)],
+                )
+            elif attr.type == 'big_str':
+                field = TextAreaField(
+                    label=attr.name,
+                    validators=[DataRequired(), length(max=10000)],
+                    render_kw={'class': 'no-resize'},
+                )
             elif attr.type == 'int':
                 field = IntegerField(**field_kwargs)
             elif attr.type == 'float':
@@ -179,9 +190,12 @@ class Category(Model):
 
         # Dynamically create the form class with the fields
         DynamicForm = type(f'CreateListingForm_Category{self.id}', (FlaskForm,), fields)
+        instance = DynamicForm()
+        instance._attribute_map = attr_map
 
         # Return an instance of the form
-        return DynamicForm()
+        return instance
+
 
 def slugify(text):
     # Normalize: "á" → "a", etc.

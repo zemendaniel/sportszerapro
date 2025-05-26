@@ -5,7 +5,7 @@ from time import sleep
 from flask import request, render_template, abort, flash, redirect, url_for, g, make_response
 from blueprints.listings import bp
 from blueprints.pages import bp as base_bp
-from blueprints.listings.forms import CreatePostForm, EditPostForm
+from blueprints.listings.forms import CreateListingFormMeta
 from persistence.repository.listing import ListingRepository
 from persistence.model.listing import Listing
 from security.decorators import is_admin, is_fully_authenticated
@@ -33,45 +33,51 @@ def create(category_id):
         abort(403)
 
     listing = Listing()
+    form_meta = CreateListingFormMeta()
     form = category.build_create_listing_form()
 
-    if form.validate_on_submit():
-        post.form_update(form)
-        post.author_id = g.user.id
-        post.save()
-        flash('Poszt hozzáadva.', 'success')
+    if form_meta.validate_on_submit() and form.validate_on_submit():
+        listing.form_update(form)
+        listing.author_id = g.user.id
+        listing.save()
 
-        return redirect(url_for('listings.edit', post_id=post.id))
+        # for:
+        #     pass
+
+
+        flash('Hirdetés hozzáadva.', 'success')
+
+        return redirect(url_for('pages.listings'))
 
     return render_template('listings/form.html', form=form, create=True)
 
 
-@bp.route('/edit/<int:post_id>', methods=('GET', 'POST'))
-@is_fully_authenticated
-@is_admin
-def edit(post_id):
-    post = PostRepository.find_by_id(post_id) or abort(404)
-    form = EditPostForm(obj=post)
-
-    if form.validate_on_submit():
-        post.form_update(form)
-        post.save()
-        flash("Poszt módosítva.", 'success')
-        return redirect(url_for('listings.edit', post_id=post.id))
-
-    return render_template('listings/form.html', form=form, post=post)
-
-
-@bp.route('/delete/<int:post_id>', methods=('POST',))
-@is_fully_authenticated
-@is_admin
-def delete(post_id):
-    post = PostRepository.find_by_id(post_id) or abort(404)
-
-    PostRepository.delete(post)
-    flash('Poszt törölve.', 'success')
-
-    return redirect(url_for('pages.listings'))
+# @bp.route('/edit/<int:post_id>', methods=('GET', 'POST'))
+# @is_fully_authenticated
+# @is_admin
+# def edit(post_id):
+#     post = PostRepository.find_by_id(post_id) or abort(404)
+#     form = EditPostForm(obj=post)
+#
+#     if form.validate_on_submit():
+#         post.form_update(form)
+#         post.save()
+#         flash("Poszt módosítva.", 'success')
+#         return redirect(url_for('listings.edit', post_id=post.id))
+#
+#     return render_template('listings/form.html', form=form, post=post)
+#
+#
+# @bp.route('/delete/<int:post_id>', methods=('POST',))
+# @is_fully_authenticated
+# @is_admin
+# def delete(post_id):
+#     post = PostRepository.find_by_id(post_id) or abort(404)
+#
+#     PostRepository.delete(post)
+#     flash('Poszt törölve.', 'success')
+#
+#     return redirect(url_for('pages.listings'))
 
 
 @bp.route('/test/')

@@ -15,14 +15,24 @@ class Listing(Model):
     slug: Mapped[str] = mapped_column(String(500), nullable=False, unique=True)
     category_id: Mapped[int] = mapped_column(ForeignKey('category.id'), nullable=False)
     category: Mapped["Category"] = relationship(back_populates="listings")
+    intent: Mapped[str] = mapped_column(String(10), nullable=False)
+    price: Mapped[int] = mapped_column(Integer, nullable=False)
+    location: Mapped[str] = mapped_column(String(255), nullable=False)
+    condition: Mapped[str] = mapped_column(String(10), nullable=False)
 
     author_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
     author: Mapped["User"] = relationship(back_populates="listings")
 
+    attribute_value_links: Mapped[List["AttributeValue"]] = relationship(back_populates="listing", cascade="all, delete-orphan")
+
     def form_update(self, form):
         self.description = form.description.data.strip()
         self.title = form.title.data.strip()
-        self.category_id = form.category.data
+        self.intent = form.intent.data
+        self.description = form.description.data.strip()
+        self.price = form.price.data
+        self.location = form.location.data
+        self.condition = form.condition.data
 
     def save(self):
         self.slug = f"{self.category.path_slug}/{slugify(self.title)}-{self.id}"

@@ -8,7 +8,8 @@ from sqlalchemy import delete
 
 
 types = {
-    'str': 'Szöveg',
+    'small_str': 'Rövid szöveg (255 karakter)',
+    'big_str': 'Hosszú szöveg (10000 karakter)',
     'int': 'Szám',
     'float': 'Törtszám',
     'bool': 'Igaz/hamis',
@@ -25,6 +26,7 @@ class Attribute(Model):
     is_default: Mapped[bool] = mapped_column(Boolean(), default=False)
     choices: Mapped[str] = mapped_column(String(1000), nullable=True)
     category_links: Mapped[List["CategoryAttribute"]] = relationship(back_populates="attribute", cascade="all, delete-orphan")
+    values: Mapped[List["AttributeValue"]] = relationship(back_populates="attribute", cascade="all, delete-orphan")
 
     def form_update(self, form):
         self.name = form.name.data.strip()
@@ -112,6 +114,23 @@ def delete_from_everywhere(attribute):
 
     g.session.execute(statement)
     g.session.commit()
+
+
+class AttributeValue(Model):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    attribute_id: Mapped[int] = mapped_column(ForeignKey("attribute.id"), nullable=False)
+    listing_id: Mapped[int] = mapped_column(ForeignKey("listing.id"), nullable=False)
+    value: Mapped[str] = mapped_column(String(10000), nullable=False)
+    attribute: Mapped["Attribute"] = relationship(back_populates="values")
+    listing: Mapped["Listing"] = relationship(back_populates="attribute_value_links")
+
+    def save(self):
+        g.session.add(self)
+        g.session.commit()
+
+    def delete(self):
+        g.session.delete(self)
+        g.session.commit()
 
 
 from persistence.repository.post import PostRepository
