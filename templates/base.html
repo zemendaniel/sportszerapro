@@ -44,6 +44,9 @@
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link {% if 'listings' in request.endpoint %}active{% endif %}" href="{{ url_for("listings.list_all") }}"><i class="fa-solid fa-house"></i> Sportszerek</a>
+                    </li>
 
                     {% if not g.user %}
                     <li class="nav-item active">
@@ -53,11 +56,6 @@
                         <a class="nav-link {% if request.endpoint == 'pages.register' %}active{% endif %}" href="{{ url_for("pages.register") }}"><i class="fa-solid fa-user-plus"></i> Regisztráció</a>
                     </li>
                     {% endif %}
-
-                    <li class="nav-item active">
-                        <a class="nav-link {% if 'listings' in request.endpoint %}active{% endif %}" href="{{ url_for("listings.list_all") }}"><i class="fa-solid fa-house"></i> Sportszerek</a>
-                    </li>
-
 
 {#                <li class="nav-item active">#}
 {#                    <a class="nav-link {% if request.endpoint == 'pages.about' %}active{% endif %}" href="{{ url_for("pages.about") }}"><i class="fa-solid fa-circle-info"></i> Rólunk</a>#}

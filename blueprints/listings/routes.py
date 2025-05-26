@@ -11,7 +11,6 @@ from security.decorators import is_admin, is_fully_authenticated
 
 
 @bp.route('/')
-@is_fully_authenticated
 def list_all():
     if request.args.get('search'):
         query_string = request.args.get('query_string')
@@ -29,7 +28,6 @@ def list_all():
 
 
 @bp.route('/view/<int:post_id>')
-@is_fully_authenticated
 def view(post_id):
     post = PostRepository.find_by_id(post_id) or abort(404)
 
@@ -81,9 +79,15 @@ def delete(post_id):
     return redirect(url_for('listings.list_all'))
 
 
+@bp.route('/test/')
+def test():
+    category = CategoryRepository.find_by_id(2)
+    form = category.build_create_listing_form()
+    print(form.attr_2)
+    return render_template('listings/test.html', form=form)
 
 
-
+from persistence.repository.category import CategoryRepository
 
 
 

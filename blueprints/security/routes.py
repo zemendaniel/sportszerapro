@@ -26,7 +26,7 @@ def verify_login_token(token, max_age=2592000):  # 30 days in seconds
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if g.user is not None:
-        return redirect(url_for('pages.home'))
+        return redirect(url_for('listings.list_all'))
 
     form = LoginForm()
 
@@ -38,7 +38,7 @@ def login():
             if request.args.get('redirect') is not None and urlsplit(request.args.get('redirect')).netloc == '':
                 response = redirect(request.args.get('redirect'))
             else:
-                response = redirect(url_for('pages.home'))
+                response = redirect(url_for('listings.list_all'))
 
             if form.stay_logged_in.data:
                 token = generate_login_token(user.id)
@@ -58,7 +58,7 @@ def login():
 @bp.route('/logout', methods=['POST'])
 def logout():
     session.clear()
-    response = redirect(url_for('pages.home'))
+    response = redirect(url_for('listings.list_all'))
     response.set_cookie('login_token', '', expires=0)
     flash('Sikeresen kijelentkezett!', 'success')
     return response

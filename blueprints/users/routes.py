@@ -45,7 +45,7 @@ def delete(user_id):
 @base_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if g.user is not None:
-        return redirect(url_for('pages.home'))
+        return redirect(url_for('listings.list_all'))
 
     form = RegisterUserForm()
     user = User()

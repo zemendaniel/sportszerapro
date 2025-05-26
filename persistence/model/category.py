@@ -149,9 +149,6 @@ class Category(Model):
         return f"Category(id={self.id}, name={self.name}, slug={self.slug}, path={self.path}, path_slug={self.path_slug})"
 
     def build_create_listing_form(self):
-        class DynamicForm(FlaskForm):
-            pass
-
         fields = {}
 
         for attr in self.all_attributes:
@@ -174,12 +171,15 @@ class Category(Model):
                 choices = [(c, c) for c in attr.choices_list]
                 field = SelectField(**field_kwargs, choices=choices)
             else:
-                continue
+                continue  # Skip unknown types
 
             fields[f'attr_{attr.id}'] = field
 
-        return DynamicForm()
+        # Dynamically create the form class with the fields
+        DynamicForm = type(f'CreateListingForm_Category{self.id}', (FlaskForm,), fields)
 
+        # Return an instance of the form
+        return DynamicForm()
 
 def slugify(text):
     # Normalize: "á" → "a", etc.
