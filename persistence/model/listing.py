@@ -12,7 +12,7 @@ class Listing(Model):
     description: Mapped[str] = mapped_column(Text(), nullable=False)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[DateTime] = mapped_column(DateTime(), nullable=False, default=datetime.utcnow())
-    slug: Mapped[str] = mapped_column(String(500))
+    slug: Mapped[str] = mapped_column(String(500), nullable=True)
     category_id: Mapped[int] = mapped_column(ForeignKey('category.id'), nullable=False)
     category: Mapped["Category"] = relationship("Category", back_populates="listings")
     intent: Mapped[str] = mapped_column(String(10), nullable=False)
@@ -30,7 +30,7 @@ class Listing(Model):
         self.title = form.title.data.strip()
         self.intent = form.intent.data
         self.description = form.description.data.strip()
-        self.price = form.price.data
+        self.price = int(form.price.data)
         self.location = form.location.data
         self.condition = form.condition.data
 
@@ -44,6 +44,23 @@ class Listing(Model):
         g.session.delete(self)
         g.session.commit()
 
+    @property
+    def created_at_display(self):
+        return self.created_at.strftime("%Y-%m-%d %H:%M")
+
+    @property
+    def intent_display(self):
+        return intent_choices[self.intent]
+
+    @property
+    def condition_display(self):
+        return condition_choices[self.condition]
+
+    @property
+    def is_owner(self):
+        return self.author_id == g.user.id
+
 
 from persistence.model.category import slugify
 from persistence.repository.listing import ListingRepository
+from blueprints.listings.forms import intent_choices, condition_choices

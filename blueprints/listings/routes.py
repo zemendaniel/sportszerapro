@@ -10,6 +10,7 @@ from persistence.repository.listing import ListingRepository
 from persistence.model.listing import Listing
 from security.decorators import is_admin, is_fully_authenticated
 from persistence.model.attribute import AttributeValue
+from blueprints import flash_form_errors
 
 
 @base_bp.route('/')
@@ -18,20 +19,20 @@ def listings(path_slug=None):
     if path_slug:
         category = CategoryRepository.find_by_path_slug(path_slug) or abort(404)
         categories = category.direct_descendants
+        listings_arr = ListingRepository.find_all_under_category(category)
     else:
         category = None
         categories = CategoryRepository.find_all_roots()
+        listings_arr = ListingRepository.find_all()
 
-    # listings_arr = ListingRepository.find_all()
-
-    return render_template('listings/list.html', categories=categories, category=category)
+    return render_template('listings/list.html', categories=categories, category=category, listings=listings_arr)
 
 
-@bp.route('/<string:slug>')
+@bp.route('/<path:slug>')
 def view(slug):
     listing = ListingRepository.find_by_slug(slug) or abort(404)
 
-    return render_template('listings/view.html', listing=listing)
+    return render_template('listings/view.html', listing=listing, category=listing.category)
 
 
 @is_fully_authenticated
@@ -74,6 +75,8 @@ def create(category_id):
         flash('Hirdetés hozzáadva.', 'success')
 
         return redirect(url_for('pages.listings'))
+    elif form.errors:
+        flash_form_errors(form)
 
     return render_template('listings/form.html', form=form, create=True, category=category)
 

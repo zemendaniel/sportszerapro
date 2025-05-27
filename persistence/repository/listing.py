@@ -6,7 +6,7 @@ class ListingRepository:
     def find_all():
         statement = (
             Listing
-            .select().order_by(Listing.id.desc())
+            .select().order_by(Listing.created_at.desc())
         )
 
         return g.session.scalars(statement).all()
@@ -40,6 +40,17 @@ class ListingRepository:
         )
 
         return g.session.scalar(statement)
+
+    @staticmethod
+    def find_all_under_category(category):
+        ids = [category.id] + [cat.id for cat in category.descendants]
+        statement = (
+            Listing
+            .select()
+            .where(Listing.category_id.in_(ids))
+        )
+
+        return g.session.scalars(statement).all()
 
 
 from persistence.model.listing import Listing

@@ -1,0 +1,21 @@
+<div class="post">
+    <div class="small-text gray-text">
+        Hirdető: {{ listing.author.name }}
+    </div>
+    <ul>
+        {% if request.endpoint != 'listings.view' %}
+            <li><a href="{{ url_for('listings.view', slug=listing.slug) }}">{{ listing.title }}</a></li>
+        {% else %}
+            <li>{{ listing.title }}</li>
+        {% endif %}
+        <li>{{ listing.created_at_display }}</li>
+        <li>{{ listing.category.name }}</li>
+        <li>{{ listing.intent_display }}</li>
+        <li>{{ listing.price }} Ft</li>
+        <li>{{ listing.location }}</li>
+        <li>{{ listing.condition_display }}</li>
+        {% for link in listing.attribute_value_links %}
+            <li>{{ link.attribute.name }}: {{ link.value }}</li>
+        {% endfor %}
+    </ul>
+</div>
