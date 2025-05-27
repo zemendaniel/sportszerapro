@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Saját hirdetéseim{% endblock %}
+
+{% block main %}
+    {% for listing in listings %}
+        {% with is_own=True %}
+            {% include "listings/listing.html" %}
+        {% endwith %}
+    {% endfor %}
+{% endblock %}

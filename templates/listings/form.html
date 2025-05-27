@@ -12,9 +12,11 @@
 {% endblock %}
 
 {% block main %}
-<div class="my-2">
-    {% include "listings/breadcrumb.html" %}
-</div>
+{% if create %}
+    <div class="my-2">
+        {% include "listings/breadcrumb.html" %}
+    </div>
+{% endif %}
 <form method="post" onchange="changed = true;" id="form-meta">
     {{ form.csrf_token() }}
     <div class="form-group mb-1">
@@ -44,7 +46,11 @@
     {% for field in form if 'attr_' in field.name %}
         <div class="form-group mb-1">
           {{ field.label }}
-          {{ field(class="form-control") }}
+          {% if field.type == "BooleanField" %}
+            {{ field() }}
+          {% else %}
+            {{ field(class="form-control") }}
+          {% endif %}
         </div>
       {% endfor %}
     <div class="form-group">
@@ -57,7 +63,7 @@
 
 <div class="d-flex align-items-center">
         {% if not create %}
-            <form action="{{ url_for('listings.delete', post_id=post.id) }}" method="post"
+            <form action="{{ url_for('listings.delete', listing_id=listing.id) }}" method="post"
                   onsubmit='return confirm("Biztosan törli?")' class="d-inline">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-dark mx-2">

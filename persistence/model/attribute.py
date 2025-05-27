@@ -2,7 +2,7 @@ from typing import List
 
 from alchemical import Model
 from flask import g
-from sqlalchemy import Integer, Text, ForeignKey, String, Boolean
+from sqlalchemy import Integer, Text, ForeignKey, String, Boolean, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import delete
 
@@ -124,6 +124,10 @@ class AttributeValue(Model):
     attribute: Mapped["Attribute"] = relationship(back_populates="values")
     listing: Mapped["Listing"] = relationship(back_populates="attribute_value_links")
 
+    __table_args__ = (
+        UniqueConstraint("attribute_id", "listing_id", name="uq_attribute_listing"),
+    )
+
     def save(self):
         g.session.add(self)
         g.session.commit()
@@ -131,6 +135,26 @@ class AttributeValue(Model):
     def delete(self):
         g.session.delete(self)
         g.session.commit()
+
+    @staticmethod
+    def find(attribute_id, listing_id):
+        statement = (
+            AttributeValue
+            .select()
+            .where(AttributeValue.attribute_id == attribute_id)
+            .where(AttributeValue.listing_id == listing_id)
+        )
+
+        return g.session.scalar(statement)
+
+    @property
+    def value_display(self):
+        if self.attribute.type == 'bool':
+            return 'igen' if self.value else 'nem'
+        elif self.attribute.type == 'date':
+            return self.value.strftime('%Y-%m-%d')
+        else:
+            return self.value
 
 
 from persistence.repository.post import PostRepository

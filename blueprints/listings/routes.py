@@ -1,7 +1,8 @@
 import re
 from datetime import datetime
 from time import sleep
-
+from wtforms.fields.simple import StringField, BooleanField
+from wtforms.fields.numeric import IntegerField, FloatField
 from flask import request, render_template, abort, flash, redirect, url_for, g, make_response
 from blueprints.listings import bp
 from blueprints.pages import bp as base_bp
@@ -81,39 +82,77 @@ def create(category_id):
     return render_template('listings/form.html', form=form, create=True, category=category)
 
 
-# @bp.route('/edit/<int:post_id>', methods=('GET', 'POST'))
-# @is_fully_authenticated
-# @is_admin
-# def edit(post_id):
-#     post = PostRepository.find_by_id(post_id) or abort(404)
-#     form = EditPostForm(obj=post)
-#
-#     if form.validate_on_submit():
-#         post.form_update(form)
-#         post.save()
-#         flash("Poszt módosítva.", 'success')
-#         return redirect(url_for('listings.edit', post_id=post.id))
-#
-#     return render_template('listings/form.html', form=form, post=post)
-#
-#
-# @bp.route('/delete/<int:post_id>', methods=('POST',))
-# @is_fully_authenticated
-# @is_admin
-# def delete(post_id):
-#     post = PostRepository.find_by_id(post_id) or abort(404)
-#
-#     PostRepository.delete(post)
-#     flash('Poszt törölve.', 'success')
-#
-#     return redirect(url_for('pages.listings'))
+@bp.route('/edit/<int:listing_id>', methods=('GET', 'POST'))
+@is_fully_authenticated
+def edit(listing_id):
+    listing = ListingRepository.find_by_id(listing_id) or abort(404)
+    if listing.author_id != g.user.id:
+        abort(403)
+
+    form = listing.category.build_create_listing_form()
+
+    if form.validate_on_submit():
+        listing.form_update(form)
+        listing.save()
+
+        for field_name, field in form._fields.items():
+            if field_name.startswith("attr_"):
+                attr_id = int(field_name.replace("attr_", ""))
+                value = field.data
+                print(value)
+                try:
+                    int(value)
+                except ValueError:
+                    value = value.strip()
+                attr_value_link = AttributeValue.find(attr_id, listing_id)
+                if attr_value_link:
+                    attr_value_link.value = value
+                else:
+                    attr_value_link = AttributeValue(attribute_id=attr_id, listing_id=listing_id, value=value)
+                attr_value_link.save()
+
+        flash('Hirdetés módosítva.', 'success')
+        return redirect(url_for('listings.edit', listing_id=listing.id))
+
+    elif request.method == 'GET':
+        form.process(obj=listing)
+        for av in listing.attribute_value_links:
+            field_name = f'attr_{av.attribute_id}'
+            if field_name in form:
+                form[field_name].data = av.value
+
+    elif form.errors:
+        flash_form_errors(form)
+
+    return render_template('listings/form.html', form=form, listing=listing)
 
 
-@bp.route('/test/')
-def test():
-    category = CategoryRepository.find_by_id(2)
-    form = category.build_create_listing_form()
-    return render_template('listings/test.html', form=form)
+@bp.route('/delete/<int:listing_id>', methods=('POST',))
+@is_fully_authenticated
+def delete(listing_id):
+    listing = ListingRepository.find_by_id(listing_id) or abort(404)
+    if listing.author_id != g.user.id:
+        abort(403)
+
+    listing.delete()
+    flash('Hirdetés törölve.', 'success')
+
+    return redirect(url_for('listings.own'))
+
+
+# @bp.route('/test/')
+# def test():
+#     category = CategoryRepository.find_by_id(2)
+#     form = category.build_create_listing_form()
+#     return render_template('listings/test.html', form=form)
+
+
+@bp.route('/sajat-hirdeteseim')
+@is_fully_authenticated
+def own():
+    listings_arr = ListingRepository.find_all_owned_by_user(g.user.id)
+
+    return render_template('listings/own.html', listings=listings_arr)
 
 
 from persistence.repository.category import CategoryRepository

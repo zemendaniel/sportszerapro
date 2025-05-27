@@ -1,4 +1,12 @@
 <div class="post">
+    {% if is_own %}
+        <a href="{{ url_for('listings.edit', listing_id=listing.id) }}" class="btn btn-dark me-2"><i class="fas fa-edit"></i></a>
+        <form action="{{ url_for('listings.delete', listing_id=listing.id) }}" method="post"
+              onsubmit='return confirm("Biztosan törli? ({{ listing.title }})")'>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+        </form>
+    {% endif %}
     <div class="small-text gray-text">
         Hirdető: {{ listing.author.name }}
     </div>
@@ -15,7 +23,7 @@
         <li>{{ listing.location }}</li>
         <li>{{ listing.condition_display }}</li>
         {% for link in listing.attribute_value_links %}
-            <li>{{ link.attribute.name }}: {{ link.value }}</li>
+            <li>{{ link.attribute.name }}: {{ link.value_display }}</li>
         {% endfor %}
     </ul>
 </div>

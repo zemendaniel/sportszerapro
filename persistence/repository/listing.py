@@ -52,5 +52,15 @@ class ListingRepository:
 
         return g.session.scalars(statement).all()
 
+    @staticmethod
+    def find_all_owned_by_user(user_id):
+        statement = (
+            Listing
+            .select()
+            .where(Listing.author_id == user_id).order_by(Listing.created_at.desc())
+        )
+
+        return g.session.scalars(statement).all()
+
 
 from persistence.model.listing import Listing
