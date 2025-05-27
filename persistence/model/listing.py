@@ -19,7 +19,7 @@ class Listing(Model):
     price: Mapped[int] = mapped_column(Integer, nullable=False)
     location: Mapped[str] = mapped_column(String(255), nullable=False)
     condition: Mapped[str] = mapped_column(String(10), nullable=False)
-
+    brand: Mapped[str] = mapped_column(String(255), nullable=False)
     author_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
     author: Mapped["User"] = relationship(back_populates="listings")
 
@@ -33,6 +33,7 @@ class Listing(Model):
         self.price = int(form.price.data)
         self.location = form.location.data
         self.condition = form.condition.data
+        self.brand = form.brand.data.strip()
 
     def save(self):
         g.session.add(self)

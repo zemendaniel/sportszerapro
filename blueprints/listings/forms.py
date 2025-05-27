@@ -22,3 +22,4 @@ class CreateListingFormMeta(FlaskForm):
     description = TextAreaField('Leírás', validators=[DataRequired(), length(max=10000)])
     price = IntegerField('Ár (bruttó)', validators=[DataRequired(), NumberRange(min=0, max=10**10)])
     location = StringField('Helység', validators=[DataRequired(), length(max=255)])
+    brand = StringField('Márka', validators=[DataRequired(), length(max=255)])
